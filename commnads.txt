@@ -1,0 +1,26 @@
+SELECT i.id, i.title AS ingredient, COUNT(ri.recipe_id) AS recipe_count
+FROM ingredients i
+LEFT JOIN recipe_ingredients ri ON i.id = ri.ingredient_id
+GROUP BY i.id, i.title
+ORDER BY recipe_count DESC;
+
+DELETE i
+FROM ingredients i
+LEFT JOIN recipe_ingredients ri ON i.id = ri.ingredient_id
+WHERE ri.ingredient_id IS NULL;
+
+UPDATE recipe_ingredients r
+JOIN ingredients i ON r.ingredient_id = i.id
+SET r.ingredient_id = 20825,
+    r.quantity = i.quantity
+WHERE i.quantity IS NOT NULL AND i.quantity != "";
+
+
+картопля шт 14566
+картопля гр 14569
+яйце шт 14568
+вода мл 14567
+сіль за смаком 14572
+цукор г 14573
+борошно г 14574
+банан шт 14575
