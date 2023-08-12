@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Recipe;
+use App\Models\User;
 use App\Traits\ButtonsTrait;
 use App\Traits\RecipeInfoTrait;
 use App\Utils\Api;
@@ -76,7 +76,11 @@ class WebhookController
 
     public function test()
     {
-        $recipes = Recipe::first();
-        dd($recipes->ingredient_list);
+        $user = User::first();
+        dd($user->finishedRecipes());
+        if ($user->finishedRecipes()->pluck('recipe_id')->contains(3748) &&
+            !$user->finishedRecipes()->where('recipe_id', 3748)->first()->pivot->rating) {
+dd('sdf');
+        }
     }
 }

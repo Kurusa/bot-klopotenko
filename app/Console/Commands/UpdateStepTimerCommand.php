@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\AskToRateRecipeEvent;
 use App\Events\CookingDoneEvent;
 use App\Models\Step;
 use App\Models\StepToUpdate;
@@ -28,6 +29,10 @@ class UpdateStepTimerCommand extends Command
                     CookingDoneEvent::dispatch(
                         $stepToUpdate->user,
                         $stepToUpdate->message_id,
+                        $stepToUpdate->recipe,
+                    );
+                    AskToRateRecipeEvent::dispatch(
+                        $stepToUpdate->user,
                         $stepToUpdate->recipe,
                     );
                     continue;

@@ -25,9 +25,8 @@ class ShowRecipeInfoActionStrategy implements RecipeInfoActionStrategy
         $this->bot = $bot;
     }
 
-    public function performStepAction(Recipe $recipe)
+    public function performStepAction(Recipe $recipe, string $message)
     {
-        $message = $recipe->header;
         $message .= $recipe->ingredient_list;
 
         $this->bot->sendPhoto(

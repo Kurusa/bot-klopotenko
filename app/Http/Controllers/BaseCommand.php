@@ -93,9 +93,9 @@ abstract class BaseCommand
         $strategy->performStepAction($step);
     }
 
-    protected function performRecipeInfoAction(RecipeInfoActionStrategy $strategy, Recipe $recipe): void
+    protected function performRecipeInfoAction(RecipeInfoActionStrategy $strategy, Recipe $recipe, string $message): void
     {
-        $strategy->performStepAction($recipe);
+        $strategy->performStepAction($recipe, $message);
     }
 
     abstract function handle();

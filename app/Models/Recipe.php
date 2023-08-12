@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\IngredientList;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,12 +30,20 @@ class Recipe extends Model
 
     protected $casts = [
         'ingredient_list' => IngredientList::class,
+        'is_popular' => 'boolean',
     ];
 
     protected function title(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => ($this->is_popular ? '⭐ ' : '') . $value . ' ' . $this->complexity_emoji,
+            get: fn($value) => $this->is_popular . $value . ' ' . $this->complexity_emoji,
+        );
+    }
+
+    protected function isPopular(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => $value ? '⭐ ' : '',
         )->shouldCache();
     }
 
@@ -83,5 +92,20 @@ class Recipe extends Model
     public function steps(): HasMany
     {
         return $this->hasMany(Step::class);
+    }
+
+    protected static function boot() {
+        parent::boot();
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->orderBy('is_popular', 'desc');
+            $builder->orderByRaw("
+                CASE
+                    WHEN complexity = 'easy' THEN 1
+                    WHEN complexity = 'medium' THEN 2
+                    WHEN complexity = 'hard' THEN 3
+                    ELSE 4
+                END
+            ");
+        });
     }
 }

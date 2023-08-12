@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Saved;
 
+use App\Http\Controllers\BaseCommand;
 use App\Traits\ButtonsTrait;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 

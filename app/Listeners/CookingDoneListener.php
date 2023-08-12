@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\CookingDoneEvent;
 use App\Utils\Api;
 use Exception;
+use Illuminate\Database\QueryException;
 
 class CookingDoneListener
 {
@@ -20,9 +21,10 @@ class CookingDoneListener
         $bot->deleteMessageById($event->messageId);
         $bot->sendText(config('texts')['cooking_done']);
 
-        $event->user->finishedRecipes()->create([
-            'user_id'   => $event->user->id,
-            'recipe_id' => $event->recipe->id,
-        ]);
+        try {
+            $event->user->finishedRecipes()->attach($event->recipe->id);
+        } catch (QueryException) {
+
+        }
     }
 }

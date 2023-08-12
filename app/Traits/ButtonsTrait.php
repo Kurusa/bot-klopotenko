@@ -12,7 +12,7 @@ trait ButtonsTrait
     {
         $limit = 10;
         $offset = isset($this->update) ? $this->update->getCallbackQueryByKey('offset', 0) : 0;
-        $offsetedRecipes = $recipes->skip($offset)->take($limit)->get(['id', 'title', 'complexity', 'category_id']);
+        $offsetedRecipes = $recipes->skip($offset)->take($limit)->get();
 
         $buttons = [];
         foreach ($offsetedRecipes as $recipe) {
@@ -123,6 +123,17 @@ trait ButtonsTrait
             ]),
         ]];
 
+
+        if ($this->user->finishedRecipes()->pluck('recipe_id')->contains($recipe->id)) {
+            $keyboard[] = [[
+                'text' => config('texts')['rate_recipe'],
+                'callback_data' => json_encode([
+                    'a' => 'trigger_ask_rate',
+                    'recipe_id' => $recipe->id,
+                ]),
+            ]];
+        }
+
         return $keyboard;
     }
 
@@ -165,5 +176,22 @@ trait ButtonsTrait
                 ]),
             ]]];
         }
+    }
+
+    public function buildRatingsButtons(Recipe $recipe): array
+    {
+        $buttons = [];
+        foreach (config('constants')['ratings'] as $rating => $emoji) {
+            $buttons[0][] = [
+                'text' => $rating . $emoji,
+                'callback_data' => json_encode([
+                    'a'         => 'rate',
+                    'recipe_id' => $recipe->id,
+                    'rating'    => $rating,
+                ]),
+            ];
+        }
+
+        return $buttons;
     }
 }

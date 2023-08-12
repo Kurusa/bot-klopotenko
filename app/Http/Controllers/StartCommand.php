@@ -13,6 +13,7 @@ class StartCommand extends BaseCommand
             new ReplyKeyboardMarkup([
                 [config('texts')['recipes_list']],
                 [config('texts')['saved_recipes']],
+                [config('texts')['finished_recipes']],
             ], false, true)
         );
     }

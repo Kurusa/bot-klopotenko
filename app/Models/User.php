@@ -26,7 +26,10 @@ class User extends Model
 
     public function savedRecipes(): BelongsToMany
     {
-        return $this->belongsToMany(Recipe::class, 'user_recipes');
+        return $this
+            ->belongsToMany(Recipe::class, 'user_saved_recipes')
+            ->orderBy('user_saved_recipes.created_at', 'desc')
+            ->withTimestamps();
     }
 
     public function stepToUpdate(): HasOne
@@ -34,8 +37,11 @@ class User extends Model
         return $this->hasOne(StepToUpdate::class);
     }
 
-    public function finishedRecipes(): HasMany
+    public function finishedRecipes(): BelongsToMany
     {
-        return $this->hasMany(FinishedRecipe::class);
+        return $this->belongsToMany(Recipe::class, 'user_finished_recipes')
+            ->withPivot('rating')
+            ->orderBy('user_finished_recipes.created_at')
+            ->withTimestamps();
     }
 }

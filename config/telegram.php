@@ -1,13 +1,16 @@
 <?php
 
 use App\Http\Controllers\CategoryListCommand;
+use App\Http\Controllers\FinishedRecipeListCommand;
+use App\Http\Controllers\RateRecipeCommand;
 use App\Http\Controllers\RecipeInfoCommand;
 use App\Http\Controllers\RecipeListCommand;
-use App\Http\Controllers\RemoveRecipeFromSavedCommand;
-use App\Http\Controllers\SavedRecipeListCommand;
-use App\Http\Controllers\SaveRecipeCommand;
+use App\Http\Controllers\Saved\RemoveRecipeFromSavedCommand;
+use App\Http\Controllers\Saved\SavedRecipeListCommand;
+use App\Http\Controllers\Saved\SaveRecipeCommand;
 use App\Http\Controllers\StartCommand;
 use App\Http\Controllers\StartCookingCommand;
+use App\Http\Controllers\TriggerAskRateRecipeCommand;
 
 return [
     'telegram_bot_token' => env('TELEGRAM_BOT_TOKEN'),
@@ -26,6 +29,8 @@ return [
             'skip_timer'        => StartCookingCommand::class,
             'next'              => RecipeListCommand::class,
             'back'              => RecipeListCommand::class,
+            'rate'              => RateRecipeCommand::class,
+            'trigger_ask_rate'  => TriggerAskRateRecipeCommand::class,
         ],
 
         'status' => [],
@@ -33,8 +38,9 @@ return [
         'reg_exp' => [],
 
         'keyboard' => [
-            'recipes_list' => CategoryListCommand::class,
-            'saved_recipes' => SavedRecipeListCommand::class,
+            'recipes_list'     => CategoryListCommand::class,
+            'saved_recipes'    => SavedRecipeListCommand::class,
+            'finished_recipes' => FinishedRecipeListCommand::class,
         ],
 
         'slash' => [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AskToRateRecipeEvent;
 use App\Events\CookingDoneEvent;
 use App\Http\Controllers\CookingSteps\FirstStepStrategy;
 use App\Http\Controllers\CookingSteps\NextStepStrategy;
@@ -27,6 +28,10 @@ class StartCookingCommand extends BaseCommand
             CookingDoneEvent::dispatch(
                 $this->user,
                 $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+                $recipe,
+            );
+            AskToRateRecipeEvent::dispatch(
+                $this->user,
                 $recipe,
             );
             return;

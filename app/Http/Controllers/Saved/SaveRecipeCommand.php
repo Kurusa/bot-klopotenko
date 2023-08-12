@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Saved;
 
+use App\Http\Controllers\BaseCommand;
+use App\Http\Controllers\RecipeInfoCommand;
 use App\Traits\ButtonsTrait;
 
 class SaveRecipeCommand extends BaseCommand

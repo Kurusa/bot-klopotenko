@@ -35,6 +35,14 @@ class RecipeInfoCommand extends BaseCommand
             $strategy = $this->createStrategy(ShowRecipeInfoActionStrategy::class);
         }
 
-        $this->performRecipeInfoAction($strategy, $recipe);
+        $message = $recipe->header;
+        $finishedRecipe = $this->user->finishedRecipes()->where('recipe_id', $recipe->id)->first();
+        if ($finishedRecipe) {
+            $rating = $finishedRecipe->pivot->rating;
+            if ($rating) {
+                $message .= "\n" . config('texts')['your_rating'] . $rating . config('constants')['ratings'][$rating] . "\n";
+            }
+        }
+        $this->performRecipeInfoAction($strategy, $recipe, $message);
     }
 }
