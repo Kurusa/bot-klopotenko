@@ -25,7 +25,7 @@ class FirstStepStrategy implements StepStrategy
         $this->bot = $bot;
     }
 
-    public function performStepAction(Recipe $recipe, Step $step)
+    public function performStepAction(Step $step)
     {
         $this->bot->sendMessageWithKeyboard(
             $step->description,

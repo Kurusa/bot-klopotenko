@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\CookingSteps\StepStrategy;
+use App\Http\Controllers\RecipeInfoActions\RecipeInfoActionStrategy;
 use App\Models\Message;
 use App\Models\Recipe;
 use App\Models\Step;
@@ -80,16 +81,21 @@ abstract class BaseCommand
         (new $class($this->update, $params))->handle();
     }
 
-    protected function createStrategy(string $strategyClass): StepStrategy
+    protected function createStrategy(string $strategyClass): StepStrategy|RecipeInfoActionStrategy
     {
         $strategy = new $strategyClass();
         $strategy->setContext($this->update, $this->user, $this->getBot());
         return $strategy;
     }
 
-    protected function performStepAction(StepStrategy $strategy, Recipe $recipe, Step $step): void
+    protected function performStepAction(StepStrategy $strategy, Step $step): void
     {
-        $strategy->performStepAction($recipe, $step);
+        $strategy->performStepAction($step);
+    }
+
+    protected function performRecipeInfoAction(RecipeInfoActionStrategy $strategy, Recipe $recipe): void
+    {
+        $strategy->performStepAction($recipe);
     }
 
     abstract function handle();

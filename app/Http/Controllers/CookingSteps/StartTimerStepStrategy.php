@@ -24,7 +24,7 @@ class StartTimerStepStrategy implements StepStrategy
         $this->bot = $bot;
     }
 
-    public function performStepAction(Recipe $recipe, Step $step)
+    public function performStepAction(Step $step)
     {
         $message = $this->bot->editMessageWithInlineKeyboard(
             $this->update->getCallbackQuery()->getMessage()->getMessageId(),
@@ -34,7 +34,7 @@ class StartTimerStepStrategy implements StepStrategy
 
         $step->stepToUpdate()->updateOrCreate([
             'user_id' => $this->user->id,
-            'recipe_id' => $recipe->id,
+            'recipe_id' => $step->recipe->id,
         ], [
             'step_id' => $step->id,
             'next_value' => $step->time - 1,

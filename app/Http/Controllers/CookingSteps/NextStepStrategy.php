@@ -24,7 +24,7 @@ class NextStepStrategy implements StepStrategy
         $this->bot = $bot;
     }
 
-    public function performStepAction(Recipe $recipe, Step $step)
+    public function performStepAction(Step $step)
     {
         $this->user->stepToUpdate()->delete();
         $this->bot->editMessageWithInlineKeyboard(

@@ -31,17 +31,14 @@ class InlineQueryCommandHandler
         } else {
             $recipes = $this->getRecipes($this->query, $this->offset);
             foreach ($recipes as $recipe) {
-                $message = '';
-                $this->buildHeader($message, $recipe);
-                $this->buildIngredients($message, $recipe);
-
-                $complexityData = config('constants')['complexity_data'][$recipe->complexity];
+                $message = $recipe->header;
+                $message .= $recipe->ingredient_list;
 
                 $result[] = new Article(
                     $recipe->id,
                     $recipe->title,
                     '🍽 Порції: ' . $recipe->portions . ' | ⏱ Час: ' . $recipe->time .
-                    ' | ⚙ Складність: ' . $complexityData['emoji'] . ' ' . $complexityData['title'],
+                    ' | ⚙ Складність: ' . $recipe->complexity_emoji . ' ' . $recipe->complexity_title,
                     $recipe->image_url,
                     null, null,
                     new Text($message, 'html'),

@@ -13,17 +13,18 @@ class CategoryListCommand extends BaseCommand
     public function handle()
     {
         $categories = Category::all();
+        $categoryButtons = $this->buildRecipeCategoriesListButtons($categories);
 
         if ($this->update->getCallbackQuery()) {
             $this->getBot()->editMessageWithInlineKeyboard(
                 $this->update->getCallbackQuery()->getMessage()->getMessageId(),
                 config('texts')['category_list'],
-                $this->buildRecipeCategoriesListButtons($categories),
+                $categoryButtons,
             );
         } else {
             $this->getBot()->sendMessageWithKeyboard(
                 config('texts')['category_list'],
-                new InlineKeyboardMarkup($this->buildRecipeCategoriesListButtons($categories)),
+                new InlineKeyboardMarkup($categoryButtons),
             );
         }
     }

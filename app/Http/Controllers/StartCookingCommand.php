@@ -40,6 +40,6 @@ class StartCookingCommand extends BaseCommand
             $strategy = $this->createStrategy(FirstStepStrategy::class);
         }
 
-        $this->performStepAction($strategy, $recipe, $step);
+        $this->performStepAction($strategy, $step);
     }
 }

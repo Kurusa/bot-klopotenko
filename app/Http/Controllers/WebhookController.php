@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Recipe;
 use App\Traits\ButtonsTrait;
 use App\Traits\RecipeInfoTrait;
 use App\Utils\Api;
@@ -21,7 +22,6 @@ class WebhookController
         $client = new Client(getenv('TELEGRAM_BOT_TOKEN'));
 
         $client->on(function (Update $update) {
-            Log::info($update->toJson());
             $newUpdate = new \App\Utils\Update($update);
 
             $this->createHandlerInstance($this->determineHandler($newUpdate), $newUpdate)->handle();
@@ -76,5 +76,7 @@ class WebhookController
 
     public function test()
     {
+        $recipes = Recipe::first();
+        dd($recipes->ingredient_list);
     }
 }

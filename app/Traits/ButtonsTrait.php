@@ -17,7 +17,7 @@ trait ButtonsTrait
         $buttons = [];
         foreach ($offsetedRecipes as $recipe) {
             $buttons[][] = [
-                'text' => $recipe->title . config('constants')['complexity_data'][$recipe->complexity]['emoji'],
+                'text' => $recipe->title,
                 'callback_data' => json_encode([
                     'a' => 'recipe_info',
                     'recipe_id' => $recipe->id,

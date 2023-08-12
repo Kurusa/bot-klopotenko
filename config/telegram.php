@@ -30,8 +30,7 @@ return [
 
         'status' => [],
 
-        'reg_exp' => [
-        ],
+        'reg_exp' => [],
 
         'keyboard' => [
             'recipes_list' => CategoryListCommand::class,
