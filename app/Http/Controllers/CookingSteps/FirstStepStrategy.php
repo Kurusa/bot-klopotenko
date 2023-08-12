@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\CookingSteps;
 
-use App\Models\Recipe;
 use App\Models\Step;
 use App\Models\User;
 use App\Traits\ButtonsTrait;
