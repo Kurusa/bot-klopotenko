@@ -25,23 +25,37 @@ trait ButtonsTrait
             ];
         }
 
-        if ($offset > 0) {
+        if ($offset > 0 && !empty($recipes->offset($offset + 10)->value('id'))) {
             $buttons[] = [[
                 'text' => '<',
                 'callback_data' => json_encode([
-                    'a'      => 'back',
+                    'a' => 'back',
                     'offset' => $offset - 10,
                     'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
                 ]),
+            ], [
+                'text' => '>',
+                'callback_data' => json_encode([
+                    'a' => 'next',
+                    'offset' => $offset + 10,
+                    'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
+                ]),
             ]];
-        }
-
-        if (!empty($recipes->offset($offset + 10)->value('id'))) {
+        } else if (!empty($recipes->offset($offset + 10)->value('id'))) {
             $buttons[] = [[
                 'text' => '>',
                 'callback_data' => json_encode([
                     'a' => 'next',
                     'offset' => $offset + 10,
+                    'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
+                ]),
+            ]];
+        } else if ($offset > 0) {
+            $buttons[] = [[
+                'text' => '<',
+                'callback_data' => json_encode([
+                    'a' => 'back',
+                    'offset' => $offset - 10,
                     'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
                 ]),
             ]];
@@ -62,7 +76,7 @@ trait ButtonsTrait
             $buttons[$count][] = [
                 'text' => $category->title . ' (' . $category->recipes()->count() . ')',
                 'callback_data' => json_encode([
-                    'a'      => 'recipe_category',
+                    'a' => 'recipe_category',
                     'cat_id' => $category->id,
                 ]),
             ];
@@ -71,7 +85,7 @@ trait ButtonsTrait
         $buttons[][] = [
             'text' => config('texts')['all_recipes'] . ' (' . Recipe::count() . ')',
             'callback_data' => json_encode([
-                'a'      => 'recipe_category',
+                'a' => 'recipe_category',
                 'cat_id' => $category->id,
             ]),
         ];
@@ -185,9 +199,9 @@ trait ButtonsTrait
             $buttons[0][] = [
                 'text' => $rating . $emoji,
                 'callback_data' => json_encode([
-                    'a'         => 'rate',
+                    'a' => 'rate',
                     'recipe_id' => $recipe->id,
-                    'rating'    => $rating,
+                    'rating' => $rating,
                 ]),
             ];
         }

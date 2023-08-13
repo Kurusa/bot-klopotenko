@@ -60,7 +60,19 @@ abstract class BaseCommand
     {
         if ($this->update->getCallbackQuery()) {
             try {
-                $this->getBot()->answerCallbackQuery($this->update->getCallbackQuery()->getId());
+                if ($this->update->getCallbackQueryByKey('a') === 'save_recipe') {
+                    $this->getBot()->answerCallbackQuery(
+                        $this->update->getCallbackQuery()->getId(),
+                        config('texts')['recipe_saved'],
+                    );
+                } else if ($this->update->getCallbackQueryByKey('a') === 'remove_from_saved') {
+                    $this->getBot()->answerCallbackQuery(
+                        $this->update->getCallbackQuery()->getId(),
+                        config('texts')['recipe_removed_from_save'],
+                    );
+                } else {
+                    $this->getBot()->answerCallbackQuery($this->update->getCallbackQuery()->getId());
+                }
             } catch (\TelegramBot\Api\Exception $e) {
             }
         }
