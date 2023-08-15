@@ -23,6 +23,7 @@ class ParseRecipesCommand extends Command
         'https://klopotenko.com/garbuzove-pyure-z-anisom/',
         'https://klopotenko.com/midii-v-vershkovomu-sousi/',
         'https://klopotenko.com/tykva-s-seldju-idealnaja-zakuska/',
+        'https://klopotenko.com/dva-v-odnomu-marynovani-ogirky-z-shampinjonamy/',
     ];
     protected $signature = 'parse-recipes';
     use ButtonsTrait;
@@ -38,7 +39,8 @@ class ParseRecipesCommand extends Command
                     ]
                 ]);
                 $html = file_get_contents($recipe->source_url, false, $context);
-            } catch (ErrorException) {
+            } catch (ErrorException $e) {
+                dd($e->getMessage());
                 return [];
             }
 
@@ -47,7 +49,7 @@ class ParseRecipesCommand extends Command
             $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
 
             $dom->loadHTML($html);
-            $xpath = new DOMXPath($dom); // $dom - ваш об'єкт DOMDocument
+            $xpath = new DOMXPath($dom);
 
             $ingredients = $this->extractIngredients($xpath);
             Ingredient::insertOrIgnore($ingredients);
@@ -56,6 +58,7 @@ class ParseRecipesCommand extends Command
         }
 
         exit();
+
         $categories = Category::whereNotNull('source_key')->get();
         $sourceUrls = Recipe::all()->pluck('source_url');
         $client = new Client();
@@ -76,12 +79,10 @@ class ParseRecipesCommand extends Command
                 $recipeUrlNodes = $xpath->query(".//h3[@class='item-title']//a");
                 foreach ($recipeUrlNodes as $recipeUrlNode) {
                     $recipeUrl = $recipeUrlNode->getAttribute('href');
-                    if (in_array($this->trimString($recipeUrl), self::EXCLUDED_URLS)) {
+                    if (in_array($this->trimString($recipeUrl), self::EXCLUDED_URLS) || $sourceUrls->contains($recipeUrl)) {
                         continue;
                     }
-                    if ($sourceUrls->contains($recipeUrl)) {
-                        continue;
-                    }
+
                     $recipeData = $this->fetchRecipeData($recipeUrl, $category->id);
                     $this->saveRecipeToDatabase($recipeData);
                 }
@@ -179,8 +180,20 @@ class ParseRecipesCommand extends Command
     {
         $steps = [];
         $node = $xpath->query("//div[contains(@class, 'row direction-st')]//p/text()");
-        foreach ($node as $item) {
-            $steps[] = $this->trimString($item->textContent);
+
+        $query = "//div[contains(@class, 'item-figure mobile_hide')]";
+        foreach ($node as $key => $item) {
+            try {
+                if ($xpath->query($query)->item($key)->childNodes->item(1)) {
+                    $imageUrl = $xpath->query($query)->item($key)->childNodes->item(1)->getAttribute('data-src');
+                }
+            } catch (ErrorException) {
+            }
+
+            $steps[] = [
+                'description' => $this->trimString($item->textContent),
+                'image_url' => $imageUrl ?? '',
+            ];
         }
 
         return $steps;

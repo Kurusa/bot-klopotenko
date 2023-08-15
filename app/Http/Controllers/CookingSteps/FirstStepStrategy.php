@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Traits\ButtonsTrait;
 use App\Utils\Api;
 use App\Utils\Update;
+use Illuminate\Support\Facades\Log;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class FirstStepStrategy implements StepStrategy
@@ -26,9 +27,32 @@ class FirstStepStrategy implements StepStrategy
 
     public function performStepAction(Step $step)
     {
-        $this->bot->sendMessageWithKeyboard(
-            $step->description,
-            new InlineKeyboardMarkup($this->buildRecipeStepButtons($step)),
-        );
+        if ($step->image_url) {
+            if (strlen($step->description) >= 1024) {
+                $this->bot->sendPhoto(
+                    $this->user->chat_id,
+                    $step->image_url,
+                );
+                $this->bot->sendMessageWithKeyboard(
+                    $step->description,
+                    new InlineKeyboardMarkup($this->buildRecipeStepButtons($step)),
+                );
+            } else {
+                $this->bot->sendPhoto(
+                    $this->user->chat_id,
+                    $step->image_url,
+                    $step->description,
+                    null,
+                    new InlineKeyboardMarkup($this->buildRecipeStepButtons($step)),
+                    false,
+                    'html',
+                );
+            }
+        } else {
+            $this->bot->sendMessageWithKeyboard(
+                $step->description,
+                new InlineKeyboardMarkup($this->buildRecipeStepButtons($step)),
+            );
+        }
     }
 }

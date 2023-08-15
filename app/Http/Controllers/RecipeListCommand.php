@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Recipe;
 use App\Traits\ButtonsTrait;
-use Illuminate\Support\Facades\Log;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class RecipeListCommand extends BaseCommand
@@ -13,17 +13,24 @@ class RecipeListCommand extends BaseCommand
 
     public function handle()
     {
-        $recipes = Recipe::where('category_id', $this->params['cat_id'] ?? $this->update->getCallbackQueryByKey('cat_id'));
+        $categoryId = $this->params['cat_id'] ?? $this->update->getCallbackQueryByKey('cat_id');
+        $recipes = Recipe::where('category_id', $categoryId);
+        $category = Category::find($categoryId);
 
         if ($this->update->getCallbackQuery()) {
-            if ($this->update->getCallbackQuery()->getMessage()) {
+            if ($this->update->getCallbackQueryByKey('a') === 'back_from_recipe') {
+                $this->getBot()->deleteMessageById($this->update->getCallbackQuery()->getMessage()->getMessageId());
+                $this->getBot()->sendMessageWithKeyboard(
+                    config('texts')['recipes_with_category'] . $category->title,
+                    new InlineKeyboardMarkup($this->buildRecipeListButtons($recipes)),
+                );
+            } elseif ($this->update->getCallbackQuery()->getMessage()) {
                 $this->getBot()->editMessageWithInlineKeyboard(
                     $this->update->getCallbackQuery()->getMessage()->getMessageId(),
-                    config('texts')['recipes_list'],
+                    config('texts')['recipes_with_category'] . $category->title,
                     $this->buildRecipeListButtons($recipes),
                 );
             } else {
-                Log::info($this->update->toJson());
                 $this->getBot()->editMessageReplyMarkup(
                     null,
                     null,
@@ -33,7 +40,7 @@ class RecipeListCommand extends BaseCommand
             }
         } else {
             $this->getBot()->sendMessageWithKeyboard(
-                config('texts')['recipes_list'],
+                config('texts')['recipes_with_category'] . $category->title,
                 new InlineKeyboardMarkup($this->buildRecipeListButtons($recipes)),
             );
         }

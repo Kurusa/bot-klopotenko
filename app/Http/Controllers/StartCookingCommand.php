@@ -39,7 +39,7 @@ class StartCookingCommand extends BaseCommand
 
         if ($this->update->getCallbackQueryByKey('a') === 'start_timer') {
             $strategy = $this->createStrategy(StartTimerStepStrategy::class);
-        } else if (in_array($this->update->getCallbackQueryByKey('a'), ['next_step', 'skip_timer'])) {
+        } else if (in_array($this->update->getCallbackQueryByKey('a'), ['back_step', 'next_step', 'skip_timer'])) {
             $strategy = $this->createStrategy(NextStepStrategy::class);
         } else {
             $strategy = $this->createStrategy(FirstStepStrategy::class);

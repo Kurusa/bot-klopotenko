@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryListCommand;
+use App\Http\Controllers\FeedbackCommand;
 use App\Http\Controllers\FinishedRecipeListCommand;
 use App\Http\Controllers\RateRecipeCommand;
 use App\Http\Controllers\RecipeInfoCommand;
@@ -18,6 +19,7 @@ return [
     'handlers' => [
         'callback' => [
             'recipe_category'   => RecipeListCommand::class,
+            'back_from_recipe'  => RecipeListCommand::class,
             'recipe_info'       => RecipeInfoCommand::class,
             'save_recipe'       => SaveRecipeCommand::class,
             'remove_from_saved' => RemoveRecipeFromSavedCommand::class,
@@ -25,6 +27,7 @@ return [
             'hide_advice'       => RecipeInfoCommand::class,
             'start_cooking'     => StartCookingCommand::class,
             'next_step'         => StartCookingCommand::class,
+            'back_step'         => StartCookingCommand::class,
             'start_timer'       => StartCookingCommand::class,
             'skip_timer'        => StartCookingCommand::class,
             'next'              => RecipeListCommand::class,
@@ -33,7 +36,9 @@ return [
             'trigger_ask_rate'  => TriggerAskRateRecipeCommand::class,
         ],
 
-        'status' => [],
+        'status' => [
+            'feedback' => FeedbackCommand::class,
+        ],
 
         'reg_exp' => [],
 
@@ -41,11 +46,12 @@ return [
             'recipes_list'     => CategoryListCommand::class,
             'saved_recipes'    => SavedRecipeListCommand::class,
             'finished_recipes' => FinishedRecipeListCommand::class,
+            'write_feedback'   => FeedbackCommand::class,
         ],
 
         'slash' => [
-            '/start'             => StartCommand::class,
-            '/recipes'           => RecipeListCommand::class,
+            '/start'   => StartCommand::class,
+            '/recipes' => RecipeListCommand::class,
         ],
     ],
 ];

@@ -43,6 +43,7 @@ class RecipeInfoCommand extends BaseCommand
                 $message .= "\n" . config('texts')['your_rating'] . $rating . config('constants')['ratings'][$rating] . "\n";
             }
         }
+
         $this->performRecipeInfoAction($strategy, $recipe, $message);
     }
 }

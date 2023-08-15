@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Traits\ButtonsTrait;
 use App\Utils\Api;
 use App\Utils\Update;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class NextStepStrategy implements StepStrategy
 {
@@ -26,10 +27,34 @@ class NextStepStrategy implements StepStrategy
     public function performStepAction(Step $step)
     {
         $this->user->stepToUpdate()->delete();
-        $this->bot->editMessageWithInlineKeyboard(
-            $this->update->getCallbackQuery()->getMessage()->getMessageId(),
-            $step->description,
-            $this->buildRecipeStepButtons($step),
-        );
+        if ($step->image_url) {
+            $this->bot->deleteMessageById($this->update->getCallbackQuery()->getMessage()->getMessageId());
+            if (strlen($step->description) >= 1024) {
+                $this->bot->sendPhoto(
+                    $this->user->chat_id,
+                    $step->image_url,
+                );
+                $this->bot->sendMessageWithKeyboard(
+                    $step->description,
+                    new InlineKeyboardMarkup($this->buildRecipeStepButtons($step)),
+                );
+            } else {
+                $this->bot->sendPhoto(
+                    $this->user->chat_id,
+                    $step->image_url,
+                    $step->description,
+                    null,
+                    new InlineKeyboardMarkup($this->buildRecipeStepButtons($step)),
+                    false,
+                    'html',
+                );
+            }
+        } else {
+            $this->bot->editMessageWithInlineKeyboard(
+                $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+                $step->description,
+                $this->buildRecipeStepButtons($step),
+            );
+        }
     }
 }

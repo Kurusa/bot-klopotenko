@@ -16,11 +16,13 @@ SET r.ingredient_id = 20825,
 WHERE i.quantity IS NOT NULL AND i.quantity != "";
 
 
-картопля шт 14566
-картопля гр 14569
-яйце шт 14568
-вода мл 14567
-сіль за смаком 14572
-цукор г 14573
-борошно г 14574
-банан шт 14575
+UPDATE recipe_steps rs
+        JOIN (
+            SELECT id, recipe_id,
+                @index := IF(recipe_id = @prev_recipe_id, @index + 1, 1) AS new_index,
+                @prev_recipe_id := recipe_id
+            FROM recipe_steps
+            JOIN (SELECT @index := 0, @prev_recipe_id := NULL) init
+            ORDER BY recipe_id, id
+        ) tmp ON rs.id = tmp.id
+        SET rs.index = tmp.new_index

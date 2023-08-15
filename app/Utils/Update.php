@@ -35,7 +35,7 @@ class Update extends \TelegramBot\Api\Types\Update
         return $user;
     }
 
-    private function getDecodedCallbackQueryData(): array
+    public function getDecodedCallbackQueryData(): array
     {
         if ($this->getCallbackQuery() && !$this->decodedCallbackQueryData) {
             $this->decodedCallbackQueryData = json_decode($this->getCallbackQuery()->getData(), true);

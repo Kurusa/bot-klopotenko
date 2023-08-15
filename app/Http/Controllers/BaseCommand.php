@@ -33,14 +33,18 @@ abstract class BaseCommand
         $this->handleCallbackQuery();
     }
 
-    protected function saveMessage()
+    protected function saveMessage(): void
     {
         if ($this->update->getMessage()) {
-            $this->user->messages()->save(new Message([
-                'user_id' => $this->user->id,
-                'text'    => $this->update->getMessage()->getText()
-            ]));
+            $text = $this->update->getMessage()->getText();
+        } elseif ($this->update->getCallbackQuery()) {
+            $text = json_encode($this->update->getDecodedCallbackQueryData());
         }
+
+        $this->user->messages()->save(new Message([
+            'user_id' => $this->user->id,
+            'text'    => $text
+        ]));
     }
 
     protected function loadUser(): void

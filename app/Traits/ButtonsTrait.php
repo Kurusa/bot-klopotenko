@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\Recipe;
 use App\Models\Step;
+use App\Utils\TelegramKeyboard;
 use Illuminate\Support\Collection;
 
 trait ButtonsTrait
@@ -14,141 +15,118 @@ trait ButtonsTrait
         $offset = isset($this->update) ? $this->update->getCallbackQueryByKey('offset', 0) : 0;
         $offsetedRecipes = $recipes->skip($offset)->take($limit)->get();
 
-        $buttons = [];
         foreach ($offsetedRecipes as $recipe) {
-            $buttons[][] = [
-                'text' => $recipe->title,
-                'callback_data' => json_encode([
-                    'a' => 'recipe_info',
-                    'recipe_id' => $recipe->id,
-                ]),
-            ];
+            TelegramKeyboard::addButton($recipe->title, [
+                'a' => 'recipe_info',
+                'recipe_id' => $recipe->id,
+            ]);
         }
 
+        $backButton = [
+            'text' => '<',
+            'callback_data' => [
+                'a' => 'back',
+                'offset' => $offset - 10,
+                'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
+            ],
+        ];
+        $nextButton = [
+            'text' => '>',
+            'callback_data' => [
+                'a' => 'next',
+                'offset' => $offset + 10,
+                'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
+            ],
+        ];
         if ($offset > 0 && !empty($recipes->offset($offset + 10)->value('id'))) {
-            $buttons[] = [[
-                'text' => '<',
-                'callback_data' => json_encode([
-                    'a' => 'back',
-                    'offset' => $offset - 10,
-                    'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
-                ]),
-            ], [
-                'text' => '>',
-                'callback_data' => json_encode([
-                    'a' => 'next',
-                    'offset' => $offset + 10,
-                    'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
-                ]),
-            ]];
+            TelegramKeyboard::addButtons([$backButton, $nextButton]);
         } else if (!empty($recipes->offset($offset + 10)->value('id'))) {
-            $buttons[] = [[
-                'text' => '>',
-                'callback_data' => json_encode([
-                    'a' => 'next',
-                    'offset' => $offset + 10,
-                    'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
-                ]),
-            ]];
+            TelegramKeyboard::addButton($nextButton['text'], $nextButton['callback_data']);
         } else if ($offset > 0) {
-            $buttons[] = [[
-                'text' => '<',
-                'callback_data' => json_encode([
-                    'a' => 'back',
-                    'offset' => $offset - 10,
-                    'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
-                ]),
-            ]];
+            TelegramKeyboard::addButton($backButton['text'], $backButton['callback_data']);
         }
 
-        return $buttons;
+        return TelegramKeyboard::get();
     }
 
     public function buildRecipeCategoriesListButtons(Collection $categories): array
     {
         $buttons = [];
-        $count = 0;
-        foreach ($categories as $key => $category) {
-            if ($key !== 0 && $key % 2 === 0) {
-                $count++;
-            }
-
-            $buttons[$count][] = [
+        foreach ($categories as $category) {
+            $buttons[] = [
                 'text' => $category->title . ' (' . $category->recipes()->count() . ')',
-                'callback_data' => json_encode([
+                'callback_data' => [
                     'a' => 'recipe_category',
                     'cat_id' => $category->id,
-                ]),
+                ],
             ];
         }
 
-        $buttons[][] = [
-            'text' => config('texts')['all_recipes'] . ' (' . Recipe::count() . ')',
-            'callback_data' => json_encode([
-                'a' => 'recipe_category',
-                'cat_id' => $category->id,
-            ]),
-        ];
+        TelegramKeyboard::$columns = 2;
+        TelegramKeyboard::$list = $buttons;
+        TelegramKeyboard::build();
 
-        return $buttons;
+        return TelegramKeyboard::get();
     }
 
     public function buildRecipeInfoButtons(Recipe $recipe): array
     {
-        $keyboard = [[[
-            'text' => config('texts')['start_cooking'],
-            'callback_data' => json_encode([
-                'a' => 'start_cooking',
-                'recipe_id' => $recipe->id,
-            ]),
-        ]]];
+        TelegramKeyboard::addButton(config('texts')['start_cooking'], [
+            'a' => 'start_cooking',
+            'recipe_id' => $recipe->id,
+        ]);
 
+        $keyboard = [];
         if ($recipe->advice) {
             if ($this->update->getCallbackQuery() && $this->update->getCallbackQueryByKey('a') === 'show_advice') {
-                $text = config('texts')['hide_advice'];
-                $action = 'hide_advice';
+                $adviceText = config('texts')['hide_advice'];
+                $adviceAction = 'hide_advice';
             } else {
-                $text = config('texts')['show_advice'];
-                $action = 'show_advice';
+                $adviceText = config('texts')['show_advice'];
+                $adviceAction = 'show_advice';
             }
 
-            $keyboard[] = [[
-                'text' => $text,
-                'callback_data' => json_encode([
-                    'a' => $action,
+            $keyboard[] = [
+                'text' => $adviceText,
+                'callback_data' => [
+                    'a' => $adviceAction,
                     'recipe_id' => $recipe->id,
-                ]),
-            ]];
+                ],
+            ];
         }
 
         if ($this->user->savedRecipes()->pluck('id')->contains($recipe->id)) {
-            $text = config('texts')['remove_from_saved'];
-            $action = 'remove_from_saved';
+            $savedText = config('texts')['remove_from_saved'];
+            $savedAction = 'remove_from_saved';
         } else {
-            $text = config('texts')['save_for_later'];
-            $action = 'save_recipe';
+            $savedText = config('texts')['save_for_later'];
+            $savedAction = 'save_recipe';
         }
 
-        $keyboard[] = [[
-            'text' => $text,
-            'callback_data' => json_encode([
-                'a' => $action,
+        $keyboard[] = [
+            'text' => $savedText,
+            'callback_data' => [
+                'a' => $savedAction,
                 'recipe_id' => $recipe->id,
-            ]),
-        ]];
-
+            ],
+        ];
+        TelegramKeyboard::$list = $keyboard;
+        TelegramKeyboard::$columns = 2;
+        TelegramKeyboard::build();
 
         if ($this->user->finishedRecipes()->pluck('recipe_id')->contains($recipe->id)) {
-            $keyboard[] = [[
-                'text' => config('texts')['rate_recipe'],
-                'callback_data' => json_encode([
-                    'a' => 'trigger_ask_rate',
-                    'recipe_id' => $recipe->id,
-                ]),
-            ]];
+            TelegramKeyboard::addButton(config('texts')['rate_recipe'], [
+                'a' => 'trigger_ask_rate',
+                'recipe_id' => $recipe->id,
+            ]);
         }
 
-        return $keyboard;
+        TelegramKeyboard::addButton(config('texts')['back'], [
+            'a' => 'back_from_recipe',
+            'cat_id' => $recipe->category_id,
+        ]);
+
+        return TelegramKeyboard::get();
     }
 
     public function buildTimerButtons(Step $step): array
@@ -171,25 +149,44 @@ trait ButtonsTrait
 
     public function buildRecipeStepButtons(Step $step): array
     {
+        $keyboard = [];
+
+        if ($step->index > 1) {
+            $keyboard[] = [
+                'text' => config('texts')['back'],
+                'callback_data' => [
+                    'a' => 'back_step',
+                    'recipe_id' => $step->recipe_id,
+                    'step_id' => $step->id - 1,
+                ],
+            ];
+        }
+
         if ($step->time) {
-            return [[[
+            $keyboard[] = [
                 'text' => config('texts')['start_timer'],
-                'callback_data' => json_encode([
+                'callback_data' => [
                     'a' => 'start_timer',
                     'recipe_id' => $step->recipe_id,
                     'step_id' => $step->id,
-                ]),
-            ]]];
+                ],
+            ];
         } else {
-            return [[[
-                'text' => config('texts')['next_step'],
-                'callback_data' => json_encode([
+            $keyboard[] = [
+                'text' => "— Крок " . $step->index + 1,
+                'callback_data' => [
                     'a' => 'next_step',
                     'recipe_id' => $step->recipe_id,
                     'step_id' => $step->id + 1,
-                ]),
-            ]]];
+                ],
+            ];
         }
+
+        TelegramKeyboard::$list = $keyboard;
+        TelegramKeyboard::$columns = 2;
+        TelegramKeyboard::build();
+
+        return TelegramKeyboard::get();
     }
 
     public function buildRatingsButtons(Recipe $recipe): array

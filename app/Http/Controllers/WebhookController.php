@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\CallbackActionEnum;
-use App\Models\User;
+use App\Models\Recipe;
 use App\Traits\ButtonsTrait;
 use App\Traits\RecipeInfoTrait;
 use App\Utils\Api;
 use App\Utils\FindCommandHandler;
 use App\Utils\Handlers\InlineQueryCommandHandler;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Exception;
@@ -77,6 +77,14 @@ class WebhookController
 
     public function test()
     {
-        dd(CallbackActionEnum::RECIPE_INFO);
+        $recipes = Recipe::all();
+        $r = [];
+        foreach ($recipes as $recipe) {
+            if (!$recipe->ingredients->count()) {
+                $r[] = $recipe->id;
+            }
+        }
+
+        dd($r);
     }
 }
