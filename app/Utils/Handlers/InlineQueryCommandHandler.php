@@ -26,24 +26,20 @@ class InlineQueryCommandHandler
     public function handle(): array
     {
         $result = [];
-        if (!$this->query) {
-            $result = $this->buildCategoriesListInlineButtons();
-        } else {
-            $recipes = $this->getRecipes($this->query, $this->offset);
-            foreach ($recipes as $recipe) {
-                $message = $recipe->header;
-                $message .= $recipe->ingredient_list;
+        $recipes = $this->getRecipes($this->query, $this->offset);
+        foreach ($recipes as $recipe) {
+            $message = $recipe->header;
+            $message .= $recipe->ingredient_list;
 
-                $result[] = new Article(
-                    $recipe->id,
-                    $recipe->title,
-                    '🍽 Порції: ' . $recipe->portions . ' | ⏱ Час: ' . $recipe->time .
-                    ' | ⚙ Складність: ' . $recipe->complexity_emoji . ' ' . $recipe->complexity_title,
-                    $recipe->image_url,
-                    null, null,
-                    new Text($message, 'html'),
-                );
-            }
+            $result[] = new Article(
+                $recipe->id,
+                $recipe->title,
+                '🍽 Порції: ' . $recipe->portions . ' | ⏱ Час: ' . $recipe->time .
+                ' | ⚙ Складність: ' . $recipe->complexity_emoji . ' ' . $recipe->complexity_title,
+                $recipe->image_url,
+                null, null,
+                new Text($message, 'html'),
+            );
         }
 
         return $result;

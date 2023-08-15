@@ -24,41 +24,19 @@ class ParseRecipesCommand extends Command
         'https://klopotenko.com/midii-v-vershkovomu-sousi/',
         'https://klopotenko.com/tykva-s-seldju-idealnaja-zakuska/',
         'https://klopotenko.com/dva-v-odnomu-marynovani-ogirky-z-shampinjonamy/',
+        'https://klopotenko.com/grog-z-chaem-i-konjakom/',
+        'https://klopotenko.com/tort-pavlova-z-bananom-i-zhuravlynou/',
+        'https://klopotenko.com/yak-robutu-nydnuj-rus-nenydnum/',
+        'https://klopotenko.com/grushevyj-tort-z-solenou-karamellu/',
     ];
+
     protected $signature = 'parse-recipes';
+
+    private $url;
     use ButtonsTrait;
 
     public function handle()
     {
-        $recipes = Recipe::all();
-        foreach ($recipes as $recipe) {
-            try {
-                $context = stream_context_create([
-                    'http' => [
-                        'follow_location' => 1,
-                    ]
-                ]);
-                $html = file_get_contents($recipe->source_url, false, $context);
-            } catch (ErrorException $e) {
-                dd($e->getMessage());
-                return [];
-            }
-
-            $dom = new DOMDocument();
-            libxml_use_internal_errors(true);
-            $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
-
-            $dom->loadHTML($html);
-            $xpath = new DOMXPath($dom);
-
-            $ingredients = $this->extractIngredients($xpath);
-            Ingredient::insertOrIgnore($ingredients);
-            $ingredientIds = Ingredient::whereIn('title', collect($ingredients)->pluck('title')->toArray())->get(['id']);
-            $recipe->ingredients()->attach($ingredientIds);
-        }
-
-        exit();
-
         $categories = Category::whereNotNull('source_key')->get();
         $sourceUrls = Recipe::all()->pluck('source_url');
         $client = new Client();
@@ -75,6 +53,7 @@ class ParseRecipesCommand extends Command
                 if (empty($response)) {
                     break;
                 }
+
                 $xpath = $this->loadHtml($response);
                 $recipeUrlNodes = $xpath->query(".//h3[@class='item-title']//a");
                 foreach ($recipeUrlNodes as $recipeUrlNode) {
@@ -82,6 +61,8 @@ class ParseRecipesCommand extends Command
                     if (in_array($this->trimString($recipeUrl), self::EXCLUDED_URLS) || $sourceUrls->contains($recipeUrl)) {
                         continue;
                     }
+
+                    $this->url = $recipeUrl;
 
                     $recipeData = $this->fetchRecipeData($recipeUrl, $category->id);
                     $this->saveRecipeToDatabase($recipeData);
@@ -95,12 +76,11 @@ class ParseRecipesCommand extends Command
     private function fetchRecipeData(string $url, int $categoryId): array
     {
         try {
-            $context = stream_context_create([
-                'http' => [
-                    'follow_location' => 1,
-                ]
-            ]);
-            $html = file_get_contents($url, false, $context);
+            $html = file_get_contents(
+                $url,
+                false,
+                stream_context_create(['http' => ['follow_location' => 1]])
+            );
         } catch (ErrorException) {
             return [];
         }
@@ -112,13 +92,15 @@ class ParseRecipesCommand extends Command
 
         $sourceUrl = $url;
         $title = $this->extractTitle($xpath);
+        $advice = $this->extractAdvice($xpath);
+        $recipeImage = $this->extractRecipeImage($xpath);
         $portions = $this->extractPortions($xpath);
         $time = $this->extractTime($xpath);
         $complexity = $this->extractComplexity($xpath);
         $steps = $this->extractSteps($xpath);
         $ingredients = $this->extractIngredients($xpath);
 
-        return compact('categoryId', 'sourceUrl', 'title', 'portions', 'time', 'steps', 'complexity', 'ingredients');
+        return compact('advice', 'categoryId', 'sourceUrl', 'title', 'portions', 'time', 'steps', 'complexity', 'ingredients', 'recipeImage');
     }
 
     private function saveRecipeToDatabase(array $recipeData): void
@@ -126,22 +108,30 @@ class ParseRecipesCommand extends Command
         try {
             $recipe = Recipe::create([
                 'category_id' => $recipeData['categoryId'],
-                'title' => $recipeData['title'],
-                'portions' => $recipeData['portions'],
-                'time' => $recipeData['time'],
-                'complexity' => $recipeData['complexity'],
-                'source_url' => $recipeData['sourceUrl'],
+                'title'       => $recipeData['title'],
+                'portions'    => $recipeData['portions'],
+                'time'        => $recipeData['time'],
+                'complexity'  => $recipeData['complexity'],
+                'source_url'  => $recipeData['sourceUrl'],
+                'image_url'   => $recipeData['recipeImage'],
+                'advice'      => $recipeData['advice'],
             ]);
 
-            Ingredient::insertOrIgnore($recipeData['ingredients']);
+            foreach ($recipeData['ingredients'] as $ingredient) {
+                if (!Ingredient::where('title', $ingredient['title'])->exists()) {
+                    Ingredient::insert($ingredient);
+                }
+            }
+
             $ingredientIds = Ingredient::whereIn('title', collect($recipeData['ingredients'])->pluck('title')->toArray())->get(['id']);
             $recipe->ingredients()->attach($ingredientIds);
 
             $result = [];
             foreach ($recipeData['steps'] as $step) {
                 $result[] = new Step([
-                    'description' => $step,
-                    'recipe_id' => $recipe->id,
+                    'description' => $step['description'],
+                    'recipe_id'   => $recipe->id,
+                    'image_url'   => $step['image_url'],
                 ]);
             }
             $recipe->steps()->saveMany($result);
@@ -150,30 +140,49 @@ class ParseRecipesCommand extends Command
         }
     }
 
+    public function extractAdvice(DOMXPath $xpath): string
+    {
+        $paragraphs = $xpath->query('//div[@class="item-description"]/p');
+
+        $textContent = '';
+        foreach ($paragraphs as $paragraph) {
+            $textContent .= $paragraph->textContent;
+        }
+
+        return $textContent;
+    }
+
+    public function extractRecipeImage(DOMXPath $xpath): string
+    {
+        try {
+            return $xpath
+                ->query(".//img[@class='attachment-ranna-size10 size-ranna-size10 wp-post-image']")
+                ->item(0)
+                ->getAttribute('src');
+        } catch (\Error) {
+            dd($this->url);
+        }
+    }
+
     private function extractPortions(DOMXPath $xpath): int
     {
-        $node = $xpath->query(".//div[@class='feature-sub-title']")->item(1);
-        return (int)$node?->textContent;
+        return (int)$xpath
+            ->query(".//div[@class='feature-sub-title']")
+            ->item(1)?->textContent;
     }
 
     private function extractTime(DOMXPath $xpath): string
     {
         $node = $xpath->query(".//div[@class='feature-sub-title total_time']")->item(0);
-        if ($node) {
-            return $this->trimString(str_replace('total_time_text ', '', $node->textContent));
-        }
+        return $node ? $this->trimString(str_replace('total_time_text ', '', $node->textContent)) : '';
 
-        return '';
     }
 
     private function extractComplexity(DOMXPath $xpath): string
     {
         $node = $xpath->query(".//div[@class='feature-sub-title']")->item(2);
-        if ($node) {
-            return config('constants')['complexity_map'][mb_strtolower($node->textContent)];
-        }
+        return $node ? config('constants')['complexity_map'][mb_strtolower($node->textContent)] : '';
 
-        return '';
     }
 
     private function extractSteps(DOMXPath $xpath): array
@@ -192,7 +201,7 @@ class ParseRecipesCommand extends Command
 
             $steps[] = [
                 'description' => $this->trimString($item->textContent),
-                'image_url' => $imageUrl ?? '',
+                'image_url'   => $imageUrl ?? '',
             ];
         }
 
@@ -214,8 +223,10 @@ class ParseRecipesCommand extends Command
 
     private function extractTitle(DOMXPath $xpath): string
     {
-        $titleNode = $xpath->query(".//h1[@class='item-title']")->item(0);
-        return $titleNode->textContent ?? '';
+        return $xpath
+                ->query(".//h1[@class='item-title']")
+                ->item(0)
+                ->textContent ?? '';
     }
 
     private function loadHtml($html): DOMXPath|string

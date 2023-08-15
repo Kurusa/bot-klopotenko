@@ -77,14 +77,6 @@ class WebhookController
 
     public function test()
     {
-        $recipes = Recipe::all();
-        $r = [];
-        foreach ($recipes as $recipe) {
-            if (!$recipe->ingredients->count()) {
-                $r[] = $recipe->id;
-            }
-        }
-
-        dd($r);
+        Artisan::call('parse-recipes');
     }
 }
