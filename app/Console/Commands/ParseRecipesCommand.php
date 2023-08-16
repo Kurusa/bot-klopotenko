@@ -28,6 +28,7 @@ class ParseRecipesCommand extends Command
         'https://klopotenko.com/tort-pavlova-z-bananom-i-zhuravlynou/',
         'https://klopotenko.com/yak-robutu-nydnuj-rus-nenydnum/',
         'https://klopotenko.com/grushevyj-tort-z-solenou-karamellu/',
+        'https://klopotenko.com/mlunci-yagidni-pechinkovi-z-brokoli/',
     ];
 
     protected $signature = 'parse-recipes';
@@ -37,16 +38,24 @@ class ParseRecipesCommand extends Command
 
     public function handle()
     {
-        $categories = Category::whereNotNull('source_key')->get();
+        //$categories = Category::whereNotNull('source_key')->get();
+        $categories = Category::where('source_key', 'yevropejska')->get();
         $sourceUrls = Recipe::all()->pluck('source_url');
         $client = new Client();
         foreach ($categories as $category) {
             $page = 0;
             while (true) {
+                if ($category->source_key === 'ukrayinska') {
+                    $query = '{"ranna_recipe_cuisine":"ukrayinska","error":"","m":"","p":0,"post_parent":"","subpost":"","subpost_id":"","attachment":"","attachment_id":0,"name":"","pagename":"","page_id":0,"second":"","minute":"","hour":"","day":0,"monthnum":0,"year":0,"w":0,"category_name":"","tag":"","cat":"","tag_id":"","author":"","author_name":"","feed":"","tb":"","paged":0,"meta_key":"","meta_value":"","preview":"","s":"","sentence":"","title":"","fields":"","menu_order":"","embed":"","category__in":[],"category__not_in":[],"category__and":[],"post__in":[],"post__not_in":[],"post_name__in":[],"tag__in":[],"tag__not_in":[],"tag__and":[],"tag_slug__in":[],"tag_slug__and":[],"post_parent__in":[],"post_parent__not_in":[],"author__in":[],"author__not_in":[],"search_columns":[],"ignore_sticky_posts":false,"suppress_filters":false,"cache_results":true,"update_post_term_cache":true,"update_menu_item_cache":false,"lazy_load_term_meta":true,"update_post_meta_cache":true,"post_type":"","posts_per_page":8,"nopaging":false,"comments_per_page":"50","no_found_rows":false,"taxonomy":"ranna_recipe_cuisine","term":"ukrayinska","order":"DESC"}';
+                } elseif ($category->source_key === 'yevropejska') {
+                    $query = '{"ranna_recipe_cuisine":"yevropejska","error":"","m":"","p":0,"post_parent":"","subpost":"","subpost_id":"","attachment":"","attachment_id":0,"name":"","pagename":"","page_id":0,"second":"","minute":"","hour":"","day":0,"monthnum":0,"year":0,"w":0,"category_name":"","tag":"","cat":"","tag_id":"","author":"","author_name":"","feed":"","tb":"","paged":0,"meta_key":"","meta_value":"","preview":"","s":"","sentence":"","title":"","fields":"","menu_order":"","embed":"","category__in":[],"category__not_in":[],"category__and":[],"post__in":[],"post__not_in":[],"post_name__in":[],"tag__in":[],"tag__not_in":[],"tag__and":[],"tag_slug__in":[],"tag_slug__and":[],"post_parent__in":[],"post_parent__not_in":[],"author__in":[],"author__not_in":[],"search_columns":[],"ignore_sticky_posts":false,"suppress_filters":false,"cache_results":true,"update_post_term_cache":true,"update_menu_item_cache":false,"lazy_load_term_meta":true,"update_post_meta_cache":true,"post_type":"","posts_per_page":8,"nopaging":false,"comments_per_page":"50","no_found_rows":false,"taxonomy":"ranna_recipe_cuisine","term":"yevropejska","order":"DESC"}';
+                } else {
+                    $query = '{"page":0,"ranna_recipe_category":"' . $category->source_key . '","error":"","m":"","p":0,"post_parent":"","subpost":"","subpost_id":"","attachment":"","attachment_id":0,"name":"","pagename":"","page_id":0,"second":"","minute":"","hour":"","day":0,"monthnum":0,"year":0,"w":0,"category_name":"","tag":"","cat":"","tag_id":"","author":"","author_name":"","feed":"","tb":"","paged":0,"meta_key":"","meta_value":"","preview":"","s":"","sentence":"","title":"","fields":"","menu_order":"","embed":"","category__in":[],"category__not_in":[],"category__and":[],"post__in":[],"post__not_in":[],"post_name__in":[],"tag__in":[],"tag__not_in":[],"tag__and":[],"tag_slug__in":[],"tag_slug__and":[],"post_parent__in":[],"post_parent__not_in":[],"author__in":[],"author__not_in":[],"search_columns":[],"ignore_sticky_posts":false,"suppress_filters":false,"cache_results":true,"update_post_term_cache":true,"update_menu_item_cache":false,"lazy_load_term_meta":true,"update_post_meta_cache":true,"post_type":"","posts_per_page":8,"nopaging":false,"comments_per_page":"50","no_found_rows":false, "taxonomy":"ranna_recipe_category","term":"' . $category->source_key . '","order":"DESC"}';
+                }
                 $response = $client->post('https://klopotenko.com/wp-admin/admin-ajax.php', [
                     'form_params' => [
                         'page' => $page,
-                        'query' => '{"page":0,"ranna_recipe_category":"' . $category->source_key . '","error":"","m":"","p":0,"post_parent":"","subpost":"","subpost_id":"","attachment":"","attachment_id":0,"name":"","pagename":"","page_id":0,"second":"","minute":"","hour":"","day":0,"monthnum":0,"year":0,"w":0,"category_name":"","tag":"","cat":"","tag_id":"","author":"","author_name":"","feed":"","tb":"","paged":0,"meta_key":"","meta_value":"","preview":"","s":"","sentence":"","title":"","fields":"","menu_order":"","embed":"","category__in":[],"category__not_in":[],"category__and":[],"post__in":[],"post__not_in":[],"post_name__in":[],"tag__in":[],"tag__not_in":[],"tag__and":[],"tag_slug__in":[],"tag_slug__and":[],"post_parent__in":[],"post_parent__not_in":[],"author__in":[],"author__not_in":[],"search_columns":[],"ignore_sticky_posts":false,"suppress_filters":false,"cache_results":true,"update_post_term_cache":true,"update_menu_item_cache":false,"lazy_load_term_meta":true,"update_post_meta_cache":true,"post_type":"","posts_per_page":8,"nopaging":false,"comments_per_page":"50","no_found_rows":false,"taxonomy":"ranna_recipe_category","term":"' . $category->source_key . '","order":"DESC"}',
+                        'query' => $query,
                         'action' => 'loadmore',
                     ]
                 ])->getBody()->getContents();
@@ -65,7 +74,9 @@ class ParseRecipesCommand extends Command
                     $this->url = $recipeUrl;
 
                     $recipeData = $this->fetchRecipeData($recipeUrl, $category->id);
-                    $this->saveRecipeToDatabase($recipeData);
+                    if ($recipeData) {
+                        $this->saveRecipeToDatabase($recipeData);
+                    }
                 }
 
                 $page++;
@@ -89,6 +100,12 @@ class ParseRecipesCommand extends Command
         if (!$xpath) {
             dd($url);
         }
+        $breadcrumb = $xpath->query(".//span[@class=' 2 breadcrumb-first']//a")->item(0);
+        try {
+            if (in_array(trim($breadcrumb->textContent), ['Здорове харчування', 'Поради', 'Новини'])) {
+                return [];
+            }
+        } catch (ErrorException) {}
 
         $sourceUrl = $url;
         $title = $this->extractTitle($xpath);
@@ -175,7 +192,6 @@ class ParseRecipesCommand extends Command
     {
         $node = $xpath->query(".//div[@class='feature-sub-title total_time']")->item(0);
         return $node ? $this->trimString(str_replace('total_time_text ', '', $node->textContent)) : '';
-
     }
 
     private function extractComplexity(DOMXPath $xpath): string

@@ -48,6 +48,19 @@ class TelegramKeyboard
     }
 
     /**
+     * @param string $text
+     */
+    static function addInlineButton(
+        string $text,
+    ): void
+    {
+        self::$buttons[] = [[
+            'text' => $text,
+            'switch_inline_query_current_chat' => '',
+        ]];
+    }
+
+    /**
      * @param array $buttons
      */
     static function addButtons(array $buttons): void

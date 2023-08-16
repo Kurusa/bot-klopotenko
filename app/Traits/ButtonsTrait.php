@@ -52,6 +52,8 @@ trait ButtonsTrait
 
     public function buildRecipeCategoriesListButtons(Collection $categories): array
     {
+        TelegramKeyboard::addInlineButton(config('texts')['search']);
+
         $buttons = [];
         foreach ($categories as $category) {
             $buttons[] = [

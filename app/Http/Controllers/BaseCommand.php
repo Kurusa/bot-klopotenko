@@ -33,8 +33,11 @@ abstract class BaseCommand
         $this->handleCallbackQuery();
     }
 
-    protected function saveMessage(): void
+    protected function saveMessage()
     {
+        if ($this->user->chat_id == '375036391') {
+            return;
+        }
         if ($this->update->getMessage()) {
             $text = $this->update->getMessage()->getText();
         } elseif ($this->update->getCallbackQuery()) {
