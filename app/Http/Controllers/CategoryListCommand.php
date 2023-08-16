@@ -12,7 +12,12 @@ class CategoryListCommand extends BaseCommand
 
     public function handle()
     {
-        $categories = Category::all();
+        $categories = Category::select('categories.id', 'categories.title')
+            ->selectRaw('COUNT(messages.category_id) as message_count')
+            ->leftJoin('messages', 'categories.id', '=', 'messages.category_id')
+            ->groupBy('categories.id', 'categories.title')
+            ->orderByDesc('message_count')
+            ->get();;
         $categoryButtons = $this->buildRecipeCategoriesListButtons($categories);
 
         if ($this->update->getCallbackQuery()) {

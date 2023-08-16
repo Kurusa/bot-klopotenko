@@ -39,15 +39,21 @@ abstract class BaseCommand
             return;
         }
         if ($this->update->getMessage()) {
-            $text = $this->update->getMessage()->getText();
+            $payload = [
+                'text' => $this->update->getMessage()->getText(),
+            ];
         } elseif ($this->update->getCallbackQuery()) {
-            $text = json_encode($this->update->getDecodedCallbackQueryData());
+            $payload = [
+                'text' => json_encode($this->update->getDecodedCallbackQueryData()),
+            ];
+            if ($this->update->getCallbackQueryByKey('a') === 'recipe_category') {
+                $payload['category_id'] = $this->update->getCallbackQueryByKey('cat_id');
+            }
         }
 
-        $this->user->messages()->save(new Message([
-            'user_id' => $this->user->id,
-            'text'    => $text
-        ]));
+        if (isset($payload)) {
+            $this->user->messages()->save(new Message($payload));
+        }
     }
 
     protected function loadUser(): void

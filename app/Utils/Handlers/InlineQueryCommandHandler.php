@@ -2,11 +2,14 @@
 
 namespace App\Utils\Handlers;
 
+use App\Models\Message;
 use App\Models\Recipe;
+use App\Models\User;
 use App\Traits\ButtonsTrait;
 use App\Traits\InlineButtonsTrait;
 use App\Traits\RecipeInfoTrait;
-use TelegramBot\Api\Types\Inline\InlineQuery;
+use App\Utils\Update;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Inline\InputMessageContent\Text;
 use TelegramBot\Api\Types\Inline\QueryResult\Article;
 
@@ -16,11 +19,40 @@ class InlineQueryCommandHandler
 
     public int $offset;
     public string $query;
+    public $user;
+    public $update;
 
-    public function __construct(InlineQuery $inlineQuery)
+    public function __construct(Update $update)
     {
-        $this->offset = $inlineQuery->getOffset() ? (int)$inlineQuery->getOffset() : 0;
-        $this->query = $inlineQuery->getQuery();
+        $this->update = $update;
+        $this->offset = (int)$this->update->getInlineQuery()?->getOffset();
+        $this->query = (string)$this->update->getInlineQuery()?->getQuery();
+        $this->loadUser();
+        $this->saveMessage();
+    }
+
+    protected function loadUser(): void
+    {
+        $this->user = User::where('chat_id', $this->update->getBotUser()->getId())->firstOr(function () {
+            $this->user = User::create([
+                'chat_id'    => $this->update->getBotUser()->getId(),
+                'user_name'  => $this->update->getBotUser()->getUsername(),
+                'first_name' => $this->update->getBotUser()->getFirstName(),
+                'last_name'  => $this->update->getBotUser()->getLastName(),
+                'status'     => 'new',
+            ]);
+        });
+    }
+
+    protected function saveMessage(): void
+    {
+        if ($this->user->chat_id == '375036391') {
+            return;
+        }
+        $this->user->messages()->save(new Message([
+            'user_id' => $this->user->id,
+            'text'    => 'Inline query: ' . $this->update->getInlineQuery()->getQuery()
+        ]));
     }
 
     public function handle(): array
@@ -39,6 +71,7 @@ class InlineQueryCommandHandler
                 $recipe->image_url,
                 null, null,
                 new Text($message, 'html'),
+                new InlineKeyboardMarkup($this->buildRecipeInfoButtons($recipe)),
             );
         }
 
@@ -55,7 +88,7 @@ class InlineQueryCommandHandler
             })->orWhere('title', 'like', '%' . $search . '%');
         })
             ->skip($offset)
-            ->take(50)
+            ->take(20)
             ->get();
     }
 }

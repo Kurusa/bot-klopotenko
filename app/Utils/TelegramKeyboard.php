@@ -75,6 +75,9 @@ class TelegramKeyboard
 
     static function get(): array
     {
-        return self::$buttons;
+        self::$list = [];
+        $buttons = self::$buttons;
+        self::$buttons = [];
+        return $buttons;
     }
 }

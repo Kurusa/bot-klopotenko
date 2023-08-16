@@ -9,6 +9,7 @@ use App\Http\Controllers\CookingSteps\NextStepStrategy;
 use App\Http\Controllers\CookingSteps\StartTimerStepStrategy;
 use App\Models\Recipe;
 use App\Traits\ButtonsTrait;
+use Illuminate\Support\Facades\Log;
 
 class StartCookingCommand extends BaseCommand
 {
@@ -41,10 +42,12 @@ class StartCookingCommand extends BaseCommand
             $strategy = $this->createStrategy(StartTimerStepStrategy::class);
         } else if (in_array($this->update->getCallbackQueryByKey('a'), ['back_step', 'next_step', 'skip_timer'])) {
             $strategy = $this->createStrategy(NextStepStrategy::class);
-        } else {
+        } else if ($this->update->getCallbackQueryByKey('a') === 'start_cooking') {
             $strategy = $this->createStrategy(FirstStepStrategy::class);
         }
 
-        $this->performStepAction($strategy, $step);
+        if (isset($strategy)) {
+            $this->performStepAction($strategy, $step);
+        }
     }
 }

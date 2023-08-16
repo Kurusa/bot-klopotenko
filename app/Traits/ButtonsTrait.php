@@ -80,7 +80,7 @@ trait ButtonsTrait
         ]);
 
         $keyboard = [];
-        if ($recipe->advice) {
+        if ($recipe->advice && !$this->update->getInlineQuery()) {
             if ($this->update->getCallbackQuery() && $this->update->getCallbackQueryByKey('a') === 'show_advice') {
                 $adviceText = config('texts')['hide_advice'];
                 $adviceAction = 'hide_advice';
@@ -117,17 +117,21 @@ trait ButtonsTrait
         TelegramKeyboard::$columns = 2;
         TelegramKeyboard::build();
 
-        if ($this->user->finishedRecipes()->pluck('recipe_id')->contains($recipe->id)) {
-            TelegramKeyboard::addButton(config('texts')['rate_recipe'], [
-                'a' => 'trigger_ask_rate',
-                'recipe_id' => $recipe->id,
-            ]);
+        if (!$this->update->getInlineQuery()) {
+            if ($this->user->finishedRecipes()->pluck('recipe_id')->contains($recipe->id)) {
+                TelegramKeyboard::addButton(config('texts')['rate_recipe'], [
+                    'a' => 'trigger_ask_rate',
+                    'recipe_id' => $recipe->id,
+                ]);
+            }
         }
 
-        TelegramKeyboard::addButton(config('texts')['back'], [
-            'a' => 'back_from_recipe',
-            'cat_id' => $recipe->category_id,
-        ]);
+        if (!$this->update->getInlineQuery()) {
+            TelegramKeyboard::addButton(config('texts')['back'], [
+                'a' => 'back_from_recipe',
+                'cat_id' => $recipe->category_id,
+            ]);
+        }
 
         return TelegramKeyboard::get();
     }

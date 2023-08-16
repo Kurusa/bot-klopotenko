@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Message;
 use App\Models\Recipe;
+use App\Models\User;
 use App\Traits\ButtonsTrait;
 use App\Traits\RecipeInfoTrait;
 use App\Utils\Api;
@@ -32,7 +34,7 @@ class WebhookController
 
         $client->on(function (Update $update) {
             $bot = new Api(config('telegram.telegram_bot_token'));
-            $handler = new InlineQueryCommandHandler($update->getInlineQuery());
+            $handler = new InlineQueryCommandHandler(new \App\Utils\Update($update));
             try {
                 $bot->answerInlineQuery(
                     $update->getInlineQuery()->getId(),

@@ -18,6 +18,14 @@ class Update extends \TelegramBot\Api\Types\Update
         if ($update->getMessage()) {
             parent::setMessage($update->getMessage());
         }
+
+        if ($update->getInlineQuery()) {
+            parent::setInlineQuery($update->getInlineQuery());
+        }
+
+        if ($update->getChosenInlineResult()) {
+            parent::setChosenInlineResult($update->getChosenInlineResult());
+        }
     }
 
     public function getBotUser(): User
