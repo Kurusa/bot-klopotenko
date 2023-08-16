@@ -6,7 +6,6 @@ use App\Models\Recipe;
 use App\Models\Step;
 use App\Utils\TelegramKeyboard;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 
 trait ButtonsTrait
 {
