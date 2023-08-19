@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Message;
-use App\Models\Recipe;
-use App\Models\User;
 use App\Traits\ButtonsTrait;
 use App\Traits\RecipeInfoTrait;
 use App\Utils\Api;
@@ -41,7 +38,7 @@ class WebhookController
                     $handler->handle(),
                     0,
                     false,
-                    $handler->offset + 50
+                    $handler->offset + 20
                 );
             } catch (Exception $e) {
                 Log::info($e->getMessage());
@@ -79,6 +76,6 @@ class WebhookController
 
     public function test()
     {
-        Artisan::call('parse-recipes');
+        Artisan::call('recipe:send evening');
     }
 }

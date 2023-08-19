@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Traits\ButtonsTrait;
 use App\Utils\Api;
 use App\Utils\Update;
-use Illuminate\Support\Facades\Log;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class FirstStepStrategy implements StepStrategy

@@ -12,7 +12,7 @@ class StartCommand extends BaseCommand
         $this->user->save();
 
         $this->getBot()->sendMessageWithKeyboard(
-            config('texts')['main_menu'] . "\n" . 'Бот в стадії розробки!',
+            config('texts')['main_menu'] . "\n" . '(Бот в стадії розробки)',
             new ReplyKeyboardMarkup([
                 [config('texts')['recipes_list']],
                 [config('texts')['saved_recipes'], config('texts')['finished_recipes']],

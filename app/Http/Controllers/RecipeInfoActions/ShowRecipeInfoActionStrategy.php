@@ -33,7 +33,7 @@ class ShowRecipeInfoActionStrategy implements RecipeInfoActionStrategy
             $this->user->chat_id,
             $recipe->image_url,
             $message,
-            $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+            null,
             new InlineKeyboardMarkup($this->buildRecipeInfoButtons($recipe)),
             false,
             'html',

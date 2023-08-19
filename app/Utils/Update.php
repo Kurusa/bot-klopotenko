@@ -8,6 +8,7 @@ use TelegramBot\Api\Types\User;
 class Update extends \TelegramBot\Api\Types\Update
 {
     private array $decodedCallbackQueryData = [];
+    private $user;
 
     public function __construct(\TelegramBot\Api\Types\Update $update)
     {
@@ -28,6 +29,11 @@ class Update extends \TelegramBot\Api\Types\Update
         }
     }
 
+    public function setUser(\App\Models\User $user)
+    {
+        $this->user = $user;
+    }
+
     public function getBotUser(): User
     {
         if ($this->getCallbackQuery()) {
@@ -36,6 +42,11 @@ class Update extends \TelegramBot\Api\Types\Update
             $user = $this->getMessage()->getFrom();
         } elseif ($this->getInlineQuery()) {
             $user = $this->getInlineQuery()->getFrom();
+        } elseif (isset($this->user)) {
+            $telegramUser = new User();
+            $telegramUser->setUsername($this->user->user_name);
+            $telegramUser->setId($this->user->chat_id);
+            $user = $telegramUser;
         } else {
             throw new Exception('cant get telegram user data');
         }

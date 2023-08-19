@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryListCommand;
 use App\Http\Controllers\FeedbackCommand;
 use App\Http\Controllers\FinishedRecipeListCommand;
+use App\Http\Controllers\NotificationCommand;
 use App\Http\Controllers\RateRecipeCommand;
 use App\Http\Controllers\RecipeInfoCommand;
 use App\Http\Controllers\RecipeListCommand;
@@ -43,10 +44,12 @@ return [
         'reg_exp' => [],
 
         'keyboard' => [
-            'recipes_list'     => CategoryListCommand::class,
-            'saved_recipes'    => SavedRecipeListCommand::class,
-            'finished_recipes' => FinishedRecipeListCommand::class,
-            'write_feedback'   => FeedbackCommand::class,
+            'recipes_list'          => CategoryListCommand::class,
+            'saved_recipes'         => SavedRecipeListCommand::class,
+            'finished_recipes'      => FinishedRecipeListCommand::class,
+            'write_feedback'        => FeedbackCommand::class,
+            'notification_settings' => NotificationCommand::class,
+            'back'                  => StartCommand::class,
         ],
 
         'slash' => [

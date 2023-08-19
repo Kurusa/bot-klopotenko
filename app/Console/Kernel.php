@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\MatchUsersDatesCommand;
 use App\Console\Commands\ParseRecipesCommand;
 use App\Console\Commands\UpdateStepTimerCommand;
 use Illuminate\Console\Scheduling\Schedule;
@@ -12,6 +13,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         UpdateStepTimerCommand::class,
         ParseRecipesCommand::class,
+        MatchUsersDatesCommand::class,
     ];
 
     /**
@@ -22,6 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('recipe:send morning')->dailyAt('04:00');
+        $schedule->command('recipe:send dinner')->dailyAt('10:00');
+        $schedule->command('recipe:send evening')->dailyAt('20:00');
     }
 
     /**

@@ -9,7 +9,6 @@ use App\Http\Controllers\CookingSteps\NextStepStrategy;
 use App\Http\Controllers\CookingSteps\StartTimerStepStrategy;
 use App\Models\Recipe;
 use App\Traits\ButtonsTrait;
-use Illuminate\Support\Facades\Log;
 
 class StartCookingCommand extends BaseCommand
 {

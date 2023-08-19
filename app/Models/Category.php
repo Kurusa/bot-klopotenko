@@ -12,6 +12,7 @@ class Category extends Model
     protected $fillable = [
         'title',
         'source_key',
+        'notification_type',
     ];
 
     public function recipes(): HasMany

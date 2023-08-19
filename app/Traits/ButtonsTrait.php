@@ -202,12 +202,24 @@ trait ButtonsTrait
             $buttons[0][] = [
                 'text' => $rating . $emoji,
                 'callback_data' => json_encode([
-                    'a' => 'rate',
+                    'a'         => 'rate',
                     'recipe_id' => $recipe->id,
-                    'rating' => $rating,
+                    'rating'    => $rating,
                 ]),
             ];
         }
+
+        return $buttons;
+    }
+
+    public function buildNotificationTypeButtons(): array
+    {
+        $buttons = [];
+        foreach (config('constants')['notification_types'] as $notificationType) {
+            $buttons[][] = $notificationType;
+        }
+
+        $buttons[][] = config('texts')['back'];
 
         return $buttons;
     }
