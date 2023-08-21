@@ -10,6 +10,7 @@ use App\Utils\Update;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Input\InputArgument;
 
 class MatchUsersDatesCommand extends Command
@@ -43,13 +44,12 @@ class MatchUsersDatesCommand extends Command
 
             $update = new Update(new \TelegramBot\Api\Types\Update());
             $update->setUser($user);
-            (new RecipeInfoCommand(
-                $update,
-                [
-                    'recipe_id'       => $recipe->id,
-                    'is_notification' => true,
-                ]
-            ))->handle();
+            (new RecipeInfoCommand($update, [
+                'recipe_id'       => $recipe->id,
+                'is_notification' => true,
+            ]))->handle();
+
+            Log::info($notificationType . ' Send recipe to user ' . $user->id);
         }
     }
 

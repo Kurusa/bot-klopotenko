@@ -76,6 +76,6 @@ class WebhookController
 
     public function test()
     {
-        Artisan::call('recipe:send evening');
+        $bot = new Api(config('telegram.telegram_bot_token'));
     }
 }

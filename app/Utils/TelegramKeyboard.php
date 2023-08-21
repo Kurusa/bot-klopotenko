@@ -24,6 +24,11 @@ class TelegramKeyboard
                     self::$buttons[] = $oneRow;
                     $oneRow = [];
                 }
+
+                if (self::$columns > 8 && count($oneRow) === 8) {
+                    self::$buttons[] = $oneRow;
+                    $oneRow = [];
+                }
             }
 
             if (count($oneRow) > 0) {

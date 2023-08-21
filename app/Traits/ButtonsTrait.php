@@ -11,9 +11,9 @@ trait ButtonsTrait
 {
     public function buildRecipeListButtons($recipes, $catId = 0): array
     {
-        $limit = 10;
+        $recipesCount = $recipes->count();
         $offset = isset($this->update) ? $this->update->getCallbackQueryByKey('offset', 0) : 0;
-        $offsetedRecipes = $recipes->skip($offset)->take($limit)->get();
+        $offsetedRecipes = $recipes->skip($offset)->take(10)->get();
 
         foreach ($offsetedRecipes as $recipe) {
             TelegramKeyboard::addButton($recipe->title, [
@@ -25,7 +25,7 @@ trait ButtonsTrait
         $backButton = [
             'text' => '<',
             'callback_data' => [
-                'a' => 'back',
+                'a' => 'recipe_navigation',
                 'offset' => $offset - 10,
                 'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
             ],
@@ -33,18 +33,13 @@ trait ButtonsTrait
         $nextButton = [
             'text' => '>',
             'callback_data' => [
-                'a' => 'next',
+                'a' => 'recipe_navigation',
                 'offset' => $offset + 10,
                 'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
             ],
         ];
-        if ($offset > 0 && !empty($recipes->offset($offset + 10)->value('id'))) {
-            TelegramKeyboard::addButtons([$backButton, $nextButton]);
-        } else if (!empty($recipes->offset($offset + 10)->value('id'))) {
-            TelegramKeyboard::addButton($nextButton['text'], $nextButton['callback_data']);
-        } else if ($offset > 0) {
-            TelegramKeyboard::addButton($backButton['text'], $backButton['callback_data']);
-        }
+        $this->addNavigationButtons($backButton, $nextButton, $recipes);
+        $this->addPageNumbers($recipesCount, $catId);
 
         return TelegramKeyboard::get();
     }
@@ -210,6 +205,44 @@ trait ButtonsTrait
         }
 
         return $buttons;
+    }
+
+    private function addNavigationButtons(array $backButton, array $nextButton, $model): void
+    {
+        $offset = isset($this->update) ? $this->update->getCallbackQueryByKey('offset', 0) : 0;
+
+        if ($offset > 0 && !empty($model->offset($offset + 10)->value('id'))) {
+            TelegramKeyboard::addButtons([$backButton, $nextButton]);
+        } else if (!empty($model->offset($offset + 10)->value('id'))) {
+            TelegramKeyboard::addButton($nextButton['text'], $nextButton['callback_data']);
+        } else if ($offset > 0) {
+            TelegramKeyboard::addButton($backButton['text'], $backButton['callback_data']);
+        }
+    }
+
+    private function addPageNumbers($count, $catId): void
+    {
+        $offset = isset($this->update) ? $this->update->getCallbackQueryByKey('offset', 0) : 0;
+
+        $numberButtons = [];
+        for ($i = 0; $i <= floor($count / 10); $i++) {
+            $text = $i + 1;
+            if ($offset / 10 === $i) {
+                $text = '•' . $i + 1 . '•';
+            }
+            $numberButtons[] = [
+                'text' => $text,
+                'callback_data' => [
+                    'a'      => 'recipe_navigation',
+                    'offset' => $i === 0 ? 0 : $i * 10,
+                    'cat_id' => isset($this->update) ? $this->update->getCallbackQueryByKey('cat_id') : $catId,
+                ],
+            ];
+        }
+
+        TelegramKeyboard::$list = $numberButtons;
+        TelegramKeyboard::$columns = count($numberButtons);
+        TelegramKeyboard::build();
     }
 
     public function buildNotificationTypeButtons(): array

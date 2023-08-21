@@ -35,7 +35,7 @@ class ShowRecipeInfoActionStrategy implements RecipeInfoActionStrategy
             $message,
             null,
             new InlineKeyboardMarkup($this->buildRecipeInfoButtons($recipe)),
-            false,
+            true,
             'html',
         );
     }

@@ -31,10 +31,9 @@ return [
             'back_step'         => StartCookingCommand::class,
             'start_timer'       => StartCookingCommand::class,
             'skip_timer'        => StartCookingCommand::class,
-            'next'              => RecipeListCommand::class,
-            'back'              => RecipeListCommand::class,
             'rate'              => RateRecipeCommand::class,
             'trigger_ask_rate'  => TriggerAskRateRecipeCommand::class,
+            'recipe_navigation' => RecipeListCommand::class,
         ],
 
         'status' => [

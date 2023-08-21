@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('recipe:send morning')->dailyAt('04:00');
         $schedule->command('recipe:send dinner')->dailyAt('10:00');
-        $schedule->command('recipe:send evening')->dailyAt('20:00');
+        $schedule->command('recipe:send evening')->dailyAt('16:00');
     }
 
     /**
