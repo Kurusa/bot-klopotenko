@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\CheckBlockedCommand;
 use App\Console\Commands\MatchUsersDatesCommand;
 use App\Console\Commands\ParseRecipesCommand;
 use App\Console\Commands\UpdateStepTimerCommand;
@@ -14,6 +15,7 @@ class Kernel extends ConsoleKernel
         UpdateStepTimerCommand::class,
         ParseRecipesCommand::class,
         MatchUsersDatesCommand::class,
+        CheckBlockedCommand::class,
     ];
 
     /**

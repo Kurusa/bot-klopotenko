@@ -16,6 +16,7 @@ use App\Http\Controllers\TriggerAskRateRecipeCommand;
 
 return [
     'telegram_bot_token' => env('TELEGRAM_BOT_TOKEN'),
+    'admin_chat_id'      => env('ADMIN_CHAT_ID'),
 
     'handlers' => [
         'callback' => [

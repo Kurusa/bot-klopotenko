@@ -35,7 +35,7 @@ abstract class BaseCommand
 
     protected function saveMessage()
     {
-        if ($this->user->chat_id == '375036391') {
+        if ($this->user->chat_id == config('telegram.admin_chat_id')) {
             return;
         }
         if ($this->update->getMessage()) {
@@ -66,6 +66,8 @@ abstract class BaseCommand
                 'last_name'  => $this->update->getBotUser()->getLastName(),
                 'status'     => 'new',
             ]);
+
+            $this->bot->sendMessage(config('telegram.admin_chat_id'), $this->user->user_name . ' new user.');
         });
     }
 

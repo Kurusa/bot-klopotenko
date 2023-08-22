@@ -16,6 +16,7 @@ class User extends Model
         'first_name',
         'last_name',
         'chat_id',
+        'is_blocked',
         'status',
     ];
 

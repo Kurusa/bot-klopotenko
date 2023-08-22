@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Exception;
+use TelegramBot\Api\HttpException;
 use TelegramBot\Api\Types\Update;
 
 class WebhookController
@@ -77,5 +78,10 @@ class WebhookController
     public function test()
     {
         $bot = new Api(config('telegram.telegram_bot_token'));
+        try {
+            $bot->sendChatAction(375036391, 'typing');
+        } catch (HttpException) {
+            dd('sdf');
+        }
     }
 }
