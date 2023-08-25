@@ -29,7 +29,7 @@ class ShowAdviceActionStrategy implements RecipeInfoActionStrategy
     {
         $message .= $recipe->advice;
 
-        $this->bot->deleteMessage($this->user->chat_id, $this->update->getCallbackQuery()->getMessage()->getMessageId());
+        $this->bot->deleteMessage($this->user->chat_id, $this->update->getCallbackQueryMessageId());
         $this->bot->sendMessageWithKeyboard(
             $message,
             new InlineKeyboardMarkup($this->buildRecipeInfoButtons($recipe))

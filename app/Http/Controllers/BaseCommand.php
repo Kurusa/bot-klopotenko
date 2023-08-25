@@ -40,7 +40,7 @@ abstract class BaseCommand
         }
         if ($this->update->getMessage()) {
             $payload = [
-                'text' => $this->update->getMessage()->getText(),
+                'text' => $this->update->getMessageText(),
             ];
         } elseif ($this->update->getCallbackQuery()) {
             $payload = [

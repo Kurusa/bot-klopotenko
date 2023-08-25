@@ -26,7 +26,7 @@ class StartTimerStepStrategy implements StepStrategy
     public function performStepAction(Step $step)
     {
         $message = $this->bot->editMessageWithInlineKeyboard(
-            $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+            $this->update->getCallbackQueryMessageId(),
             $step->description,
             $this->buildTimerButtons($step)
         );

@@ -28,7 +28,7 @@ class RecipeInfoCommand extends BaseCommand
         } elseif (isset($this->params['recipe_id']) && $this->update->getCallbackQuery()) {
             return $this->getBot()->editMessageReplyMarkup(
                 $this->user->chat_id,
-                $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+                $this->update->getCallbackQueryMessageId(),
                 new InlineKeyboardMarkup($this->buildRecipeInfoButtons($recipe))
             );
         } else {

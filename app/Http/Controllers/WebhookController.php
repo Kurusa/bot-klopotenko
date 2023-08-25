@@ -7,7 +7,6 @@ use App\Traits\RecipeInfoTrait;
 use App\Utils\Api;
 use App\Utils\FindCommandHandler;
 use App\Utils\Handlers\InlineQueryCommandHandler;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Exception;
@@ -53,7 +52,7 @@ class WebhookController
         $client->run();
     }
 
-    private function determineHandler(Update $update): ?string
+    private function determineHandler(\App\Utils\Update $update): ?string
     {
         $handlerClassName = null;
         if ($update->getCallbackQuery()) {
@@ -62,7 +61,7 @@ class WebhookController
             if (isset(config('telegram.handlers.callback')[$action])) {
                 $handlerClassName = config('telegram.handlers.callback')[$action];
             }
-        } elseif ($update->getMessage()->getText()) {
+        } elseif ($update->getMessageText()) {
             $handler = new FindCommandHandler($update);
             $handlerClassName = $handler->findCommandHandler();
         }
@@ -77,11 +76,6 @@ class WebhookController
 
     public function test()
     {
-        $bot = new Api(config('telegram.telegram_bot_token'));
-        try {
-            $bot->sendChatAction(375036391, 'typing');
-        } catch (HttpException) {
-            dd('sdf');
-        }
+        return ['sdf1123'];
     }
 }

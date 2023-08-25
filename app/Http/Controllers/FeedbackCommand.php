@@ -9,7 +9,7 @@ class FeedbackCommand extends BaseCommand
     public function handle()
     {
         if ($this->user->status === 'feedback') {
-            if ($this->update->getMessage()->getText() === config('texts')['back']) {
+            if ($this->update->getMessageText() === config('texts')['back']) {
                 $this->user->update([
                     'status' => 'done',
                 ]);
@@ -17,7 +17,7 @@ class FeedbackCommand extends BaseCommand
                 return;
             }
 
-            $this->user->feedbacks()->create(['message' => $this->update->getMessage()->getText()]);
+            $this->user->feedbacks()->create(['message' => $this->update->getMessageText()]);
 
             $this->getBot()->sendText(config('texts')['message_sent']);
             $this->triggerCommand(StartCommand::class);

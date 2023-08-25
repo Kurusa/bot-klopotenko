@@ -27,7 +27,7 @@ class StartCookingCommand extends BaseCommand
         if (!$step) {
             CookingDoneEvent::dispatch(
                 $this->user,
-                $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+                $this->update->getCallbackQueryMessageId(),
                 $recipe,
             );
             AskToRateRecipeEvent::dispatch(

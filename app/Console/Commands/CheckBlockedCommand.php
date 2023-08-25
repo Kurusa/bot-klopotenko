@@ -2,17 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\RecipeInfoCommand;
-use App\Models\Category;
-use App\Models\Recipe;
 use App\Models\User;
 use App\Utils\Api;
-use App\Utils\Update;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\Console\Input\InputArgument;
 use TelegramBot\Api\HttpException;
 
 class CheckBlockedCommand extends Command

@@ -17,7 +17,7 @@ class FindCommandHandler
     public function __construct($update)
     {
         $this->user = User::where('chat_id', $update->getBotUser()->getId())->first();
-        $this->text = $update->getMessage()->getText();
+        $this->text = $update->getMessageText();
         $this->handlers = config('telegram.handlers');
     }
 

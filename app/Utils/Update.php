@@ -67,4 +67,22 @@ class Update extends \TelegramBot\Api\Types\Update
     {
         return isset($this->getDecodedCallbackQueryData()[$key]) ? $this->getDecodedCallbackQueryData()[$key] : $default;
     }
+
+    public function getMessageText(): ?string
+    {
+        if ($this->getMessage()) {
+            return $this->getMessage()->getText();
+        }
+
+        if ($this->getCallbackQuery()) {
+            return $this->getCallbackQuery()->getMessage()->getText();
+        }
+
+        return '';
+    }
+
+    public function getCallbackQueryMessageId(): float|int
+    {
+        return $this->getCallbackQuery()->getMessage()->getMessageId();
+    }
 }

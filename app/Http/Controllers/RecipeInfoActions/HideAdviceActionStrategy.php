@@ -29,7 +29,7 @@ class HideAdviceActionStrategy implements RecipeInfoActionStrategy
     {
         $message .= $recipe->ingredient_list;
 
-        $this->bot->deleteMessage($this->user->chat_id, $this->update->getCallbackQuery()->getMessage()->getMessageId());
+        $this->bot->deleteMessage($this->user->chat_id, $this->update->getCallbackQueryMessageId());
         $this->bot->sendPhoto(
             $this->user->chat_id,
             $recipe->image_url,

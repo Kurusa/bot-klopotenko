@@ -19,14 +19,14 @@ class RecipeListCommand extends BaseCommand
 
         if ($this->update->getCallbackQuery()) {
             if ($this->update->getCallbackQueryByKey('a') === 'back_from_recipe') {
-                $this->getBot()->deleteMessageById($this->update->getCallbackQuery()->getMessage()->getMessageId());
+                $this->getBot()->deleteMessageById($this->update->getCallbackQueryMessageId());
                 $this->getBot()->sendMessageWithKeyboard(
                     config('texts')['recipes_with_category'] . $category->title,
                     new InlineKeyboardMarkup($this->buildRecipeListButtons($recipes)),
                 );
             } elseif ($this->update->getCallbackQuery()->getMessage()) {
                 $this->getBot()->editMessageWithInlineKeyboard(
-                    $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+                    $this->update->getCallbackQueryMessageId(),
                     config('texts')['recipes_with_category'] . $category->title,
                     $this->buildRecipeListButtons($recipes),
                 );

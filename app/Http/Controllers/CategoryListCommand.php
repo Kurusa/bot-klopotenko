@@ -22,7 +22,7 @@ class CategoryListCommand extends BaseCommand
 
         if ($this->update->getCallbackQuery()) {
             $this->getBot()->editMessageWithInlineKeyboard(
-                $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+                $this->update->getCallbackQueryMessageId(),
                 config('texts')['category_list'],
                 $categoryButtons,
             );

@@ -28,7 +28,7 @@ class NextStepStrategy implements StepStrategy
     {
         $this->user->stepToUpdate()->delete();
         if ($step->image_url) {
-            $this->bot->deleteMessageById($this->update->getCallbackQuery()->getMessage()->getMessageId());
+            $this->bot->deleteMessageById($this->update->getCallbackQueryMessageId());
             if (strlen($step->description) >= 1024) {
                 $this->bot->sendPhoto(
                     $this->user->chat_id,
@@ -51,7 +51,7 @@ class NextStepStrategy implements StepStrategy
             }
         } else {
             $this->bot->editMessageWithInlineKeyboard(
-                $this->update->getCallbackQuery()->getMessage()->getMessageId(),
+                $this->update->getCallbackQueryMessageId(),
                 $step->description,
                 $this->buildRecipeStepButtons($step),
             );
