@@ -13,12 +13,12 @@ class SavedRecipeListCommand extends BaseCommand
     public function handle()
     {
         if (!$this->user->savedRecipes()->count()) {
-            $this->getBot()->sendText(config('texts')['no_saved_recipes']);
-        } else {
-            $this->getBot()->sendMessageWithKeyboard(
-                config('texts')['recipes_list'],
-                new InlineKeyboardMarkup($this->buildRecipeListButtons($this->user->savedRecipes())),
-            );
+            return $this->getBot()->sendText(config('texts')['no_saved_recipes']);
         }
+
+        $this->getBot()->sendMessageWithKeyboard(
+            config('texts')['recipes_list'],
+            new InlineKeyboardMarkup($this->buildRecipeListButtons($this->user->savedRecipes())),
+        );
     }
 }

@@ -2,11 +2,21 @@
 
 namespace App\Models;
 
+use App\Enums\UserStatus;
+use App\Models\Notification\NotificationSetting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property int $id
+ * @property bool $is_blocked
+ * @property string|null $user_name
+ * @property string|null $first_name
+ * @property int $chat_id telegram chat ID of the user. Negative for group chats.
+ * @property string $status
+ */
 class User extends Model
 {
     protected $table = 'users';
@@ -14,7 +24,6 @@ class User extends Model
     protected $fillable = [
         'user_name',
         'first_name',
-        'last_name',
         'chat_id',
         'is_blocked',
         'status',

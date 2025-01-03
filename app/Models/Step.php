@@ -17,6 +17,7 @@ class Step extends Model
         'time',
         'image_url',
         'step_done_text',
+        'index',
     ];
 
     protected function description(): Attribute

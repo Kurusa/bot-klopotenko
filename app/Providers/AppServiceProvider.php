@@ -2,26 +2,15 @@
 
 namespace App\Providers;
 
+use App\Utils\Api;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
+    public function boot(): void
     {
-        //
-    }
-
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
+        $this->app->singleton(Api::class, function () {
+            return new Api(config('telegram.telegram_bot_token'));
+        });
     }
 }

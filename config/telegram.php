@@ -16,24 +16,24 @@ use App\Http\Controllers\TriggerAskRateRecipeCommand;
 
 return [
     'telegram_bot_token' => env('TELEGRAM_BOT_TOKEN'),
-    'admin_chat_id'      => env('ADMIN_CHAT_ID'),
+    'admin_chat_id' => env('ADMIN_CHAT_ID'),
 
     'handlers' => [
         'callback' => [
-            'recipe_category'   => RecipeListCommand::class,
-            'back_from_recipe'  => RecipeListCommand::class,
-            'recipe_info'       => RecipeInfoCommand::class,
-            'save_recipe'       => SaveRecipeCommand::class,
+            'recipe_category' => RecipeListCommand::class,
+            'back_from_recipe' => RecipeListCommand::class,
+            'recipe_info' => RecipeInfoCommand::class,
+            'save_recipe' => SaveRecipeCommand::class,
             'remove_from_saved' => RemoveRecipeFromSavedCommand::class,
-            'show_advice'       => RecipeInfoCommand::class,
-            'hide_advice'       => RecipeInfoCommand::class,
-            'start_cooking'     => StartCookingCommand::class,
-            'next_step'         => StartCookingCommand::class,
-            'back_step'         => StartCookingCommand::class,
-            'start_timer'       => StartCookingCommand::class,
-            'skip_timer'        => StartCookingCommand::class,
-            'rate'              => RateRecipeCommand::class,
-            'trigger_ask_rate'  => TriggerAskRateRecipeCommand::class,
+            'show_advice' => RecipeInfoCommand::class,
+            'hide_advice' => RecipeInfoCommand::class,
+            'start_cooking' => StartCookingCommand::class,
+            'next_step' => StartCookingCommand::class,
+            'back_step' => StartCookingCommand::class,
+            'start_timer' => StartCookingCommand::class,
+            'skip_timer' => StartCookingCommand::class,
+            'rate' => RateRecipeCommand::class,
+            'trigger_ask_rate' => TriggerAskRateRecipeCommand::class,
             'recipe_navigation' => RecipeListCommand::class,
         ],
 
@@ -44,16 +44,16 @@ return [
         'reg_exp' => [],
 
         'keyboard' => [
-            'recipes_list'          => CategoryListCommand::class,
-            'saved_recipes'         => SavedRecipeListCommand::class,
-            'finished_recipes'      => FinishedRecipeListCommand::class,
-            'write_feedback'        => FeedbackCommand::class,
+            'recipes_list' => CategoryListCommand::class,
+            'saved_recipes' => SavedRecipeListCommand::class,
+            'finished_recipes' => FinishedRecipeListCommand::class,
+            'write_feedback' => FeedbackCommand::class,
             'notification_settings' => NotificationCommand::class,
-            'back'                  => StartCommand::class,
+            'back' => StartCommand::class,
         ],
 
         'slash' => [
-            '/start'   => StartCommand::class,
+            '/start' => StartCommand::class,
             '/recipes' => RecipeListCommand::class,
         ],
     ],

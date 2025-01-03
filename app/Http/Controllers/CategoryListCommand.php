@@ -17,7 +17,7 @@ class CategoryListCommand extends BaseCommand
             ->leftJoin('messages', 'categories.id', '=', 'messages.category_id')
             ->groupBy('categories.id', 'categories.title')
             ->orderByDesc('message_count')
-            ->get();;
+            ->get();
         $categoryButtons = $this->buildRecipeCategoriesListButtons($categories);
 
         if ($this->update->getCallbackQuery()) {
