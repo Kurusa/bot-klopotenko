@@ -2,67 +2,106 @@
 
 namespace App\Utils;
 
-use TelegramBot\Api\{BotApi, Exception, Types\Inline\InlineKeyboardMarkup, Types\Message};
+use TelegramBot\Api\BotApi;
+use TelegramBot\Api\Exception;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use TelegramBot\Api\Types\Message;
+use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 
 class Api extends BotApi
 {
-    private $chatId;
+    private int $chatId;
 
-    public function __construct($token, $trackerToken = null)
+    public function __construct(
+        protected $token,
+        ?string   $trackerToken = null
+    )
     {
         parent::__construct($token, $trackerToken);
     }
 
-    public function setChatId(int $chatId)
+    public function setChatId(int $chatId): void
     {
         $this->chatId = $chatId;
     }
 
     public function sendMessageWithKeyboard(
-        string $text,
-               $keyboard,
+        string                                   $text,
+        InlineKeyboardMarkup|ReplyKeyboardMarkup $keyboard,
+        int                                      $messageIdToUpdate = null,
     ): Message
     {
-        return parent::sendMessage(
-            $this->chatId,
-            $text,
-            'HTML',
-            true,
-            null,
-            $keyboard,
-        );
-    }
+        try {
+            if ($messageIdToUpdate) {
+                return $this->editMessageWithInlineKeyboard(
+                    $messageIdToUpdate,
+                    $text,
+                    $keyboard,
+                );
+            }
 
-    public function editMessageWithInlineKeyboard(
-        $messageId,
-        string $text,
-        array $keyboard,
-    ): Message
-    {
-        return parent::editMessageText(
-            $this->chatId,
-            $messageId,
-            $text,
-            'html',
-            false,
-            new InlineKeyboardMarkup($keyboard),
-        );
+            return parent::sendMessage(
+                $this->chatId,
+                $text,
+                'markdown',
+                true,
+                null,
+                $keyboard,
+            );
+        } catch (Exception $e) {
+            return $this->notifyAdmin($e->getMessage());
+        }
     }
 
     public function sendText(
         string $text,
+        bool   $disableNotification = false,
     ): Message
     {
+        try {
+            return parent::sendMessage(
+                $this->chatId,
+                $text,
+                'markdown',
+                false,
+                null,
+                null,
+                $disableNotification,
+            );
+        } catch (Exception $e) {
+            return $this->notifyAdmin($e->getMessage());
+        }
+    }
+
+    public function notifyAdmin(string $exception): Message
+    {
         return parent::sendMessage(
-            $this->chatId,
-            $text,
-            'html',
+            config('telegram.admin_chat_id'),
+            $exception,
         );
     }
 
-    public function deleteMessageById(
+    private function editMessageWithInlineKeyboard(
         $messageId,
-    )
+        string $text,
+        $keyboard,
+    ): Message
+    {
+        try {
+            return parent::editMessageText(
+                $this->chatId,
+                $messageId,
+                $text,
+                'markdown',
+                false,
+                $keyboard,
+            );
+        } catch (Exception $e) {
+            return $this->notifyAdmin($e->getMessage());
+        }
+    }
+
+    public function deleteMessageById(int $messageId): Message|bool
     {
         try {
             return parent::deleteMessage(
@@ -70,6 +109,7 @@ class Api extends BotApi
                 $messageId,
             );
         } catch (Exception $e) {
+            return $this->notifyAdmin($e->getMessage());
         }
     }
 }

@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property string $unit
+ */
 class Ingredient extends Model
 {
-    protected $table = 'ingredients';
-
     protected $fillable = [
         'title',
         'unit',

@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Utils\Handlers;
+namespace App\Services\Handlers\Commands;
+
+use function array_flip;
 
 class KeyboardCommandHandler implements CommandHandlerInterface
 {
-    private string $text;
-    private array $keyboardHandlers;
-
-    public function __construct(string $text, array $keyboardHandlers)
+    public function __construct(
+        private readonly ?string $text,
+        private readonly array   $keyboardHandlers,
+    )
     {
-        $this->text = $text;
-        $this->keyboardHandlers = $keyboardHandlers;
     }
 
     public function handle(): ?string
     {
         $key = $this->processKeyboardCommand($this->text);
+
         if ($key) {
             if (isset($this->keyboardHandlers[$key])) {
                 return $this->keyboardHandlers[$key];
@@ -25,9 +26,10 @@ class KeyboardCommandHandler implements CommandHandlerInterface
         return null;
     }
 
-    private function processKeyboardCommand(string $text): ?string
+    private function processKeyboardCommand(?string $text): ?string
     {
-        $translations = \array_flip(config('texts'));
+        $translations = array_flip(__('texts'));
+
         if (isset($translations[$text])) {
             return $translations[$text];
         }

@@ -19,7 +19,7 @@ class CookingDoneListener
 
         $event->user->stepToUpdate()->delete();
         $bot->deleteMessageById($event->messageId);
-        $bot->sendText(config('texts')['cooking_done']);
+        $bot->sendText(__('texts.cooking_done'));
 
         try {
             $event->user->finishedRecipes()->attach($event->recipe->id);

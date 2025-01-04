@@ -54,7 +54,7 @@ class UpdateStepTimerCommand extends Command
                         'callback_data' => json_encode([]),
                     ]],
                     [[
-                        'text' => config('texts')['skip_timer'],
+                        'text' => __('texts.skip_timer'),
                         'callback_data' => json_encode([
                             'a' => 'skip_timer',
                             'recipe_id' => $stepToUpdate->recipe_id,

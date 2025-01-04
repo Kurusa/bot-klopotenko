@@ -12,16 +12,14 @@ class AskToRateRecipeListener
 {
     use ButtonsTrait;
 
-    /**
-     * @throws Exception
-     */
     public function handle(AskToRateRecipeEvent $event): void
     {
-        $bot = new Api(config('telegram.telegram_bot_token'));
+        /** @var Api $bot */
+        $bot = app(Api::class);
         $bot->setChatId($event->user->chat_id);
 
         $bot->sendMessageWithKeyboard(
-            config('texts')['please_rate_recipe'],
+            config('texts.please_rate_recipe'),
             new InlineKeyboardMarkup($this->buildRatingsButtons($event->recipe))
         );
     }

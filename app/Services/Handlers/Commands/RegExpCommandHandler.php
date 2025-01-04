@@ -1,16 +1,14 @@
 <?php
 
-namespace App\Utils\Handlers;
+namespace App\Services\Handlers\Commands;
 
 class RegExpCommandHandler implements CommandHandlerInterface
 {
-    private string $text;
-    private array $regExpHandlers;
-
-    public function __construct(string $text, array $regExpHandlers)
+    public function __construct(
+        private readonly ?string $text,
+        private readonly array   $regExpHandlers,
+    )
     {
-        $this->text = $text;
-        $this->regExpHandlers = $regExpHandlers;
     }
 
     public function handle(): ?string

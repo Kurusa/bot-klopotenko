@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Message extends Model
 {
-    protected $table = 'messages';
-
     protected $fillable = [
         'text',
         'user_id',

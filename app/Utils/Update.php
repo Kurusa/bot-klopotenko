@@ -2,15 +2,15 @@
 
 namespace App\Utils;
 
-use Exception;
-use TelegramBot\Api\Types\User;
+use App\Enums\CallbackAction\CallbackActionEnum;
+use App\Services\CallbackActionRegistry;
+use TelegramBot\Api\Types\Update as BaseUpdate;
 
-class Update extends \TelegramBot\Api\Types\Update
+class Update extends BaseUpdate
 {
     private array $decodedCallbackQueryData = [];
-    private $user;
 
-    public function __construct(\TelegramBot\Api\Types\Update $update)
+    public function __construct(BaseUpdate $update)
     {
         if ($update->getCallbackQuery()) {
             parent::setCallbackQuery($update->getCallbackQuery());
@@ -29,31 +29,6 @@ class Update extends \TelegramBot\Api\Types\Update
         }
     }
 
-    public function setUser(\App\Models\User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function getBotUser(): User
-    {
-        if ($this->getCallbackQuery()) {
-            $user = $this->getCallbackQuery()->getFrom();
-        } elseif ($this->getMessage()) {
-            $user = $this->getMessage()->getFrom();
-        } elseif ($this->getInlineQuery()) {
-            $user = $this->getInlineQuery()->getFrom();
-        } elseif (isset($this->user)) {
-            $telegramUser = new User();
-            $telegramUser->setUsername($this->user->user_name);
-            $telegramUser->setId($this->user->chat_id);
-            $user = $telegramUser;
-        } else {
-            throw new Exception('cant get telegram user data');
-        }
-
-        return $user;
-    }
-
     public function getDecodedCallbackQueryData(): array
     {
         if ($this->getCallbackQuery() && !$this->decodedCallbackQueryData) {
@@ -63,9 +38,23 @@ class Update extends \TelegramBot\Api\Types\Update
         return $this->decodedCallbackQueryData;
     }
 
-    public function getCallbackQueryByKey(string $key, $default = '')
+    public function getCallbackQueryByKey(string $key, $defaultValue = ''): mixed
     {
-        return isset($this->getDecodedCallbackQueryData()[$key]) ? $this->getDecodedCallbackQueryData()[$key] : $default;
+        return $this->getDecodedCallbackQueryData()[$key] ?? $defaultValue;
+    }
+
+    public function getCallbackAction(): ?CallbackActionEnum
+    {
+        $callbackActionValue = (int)$this->getCallbackQueryByKey('a');
+
+        /** @var class-string<CallbackActionEnum> $enumClass */
+        foreach (CallbackActionRegistry::getEnums() as $enumClass) {
+            if ($enumInstance = $enumClass::tryFrom($callbackActionValue)) {
+                return $enumInstance;
+            }
+        }
+
+        return null;
     }
 
     public function getMessageText(): ?string
@@ -81,8 +70,8 @@ class Update extends \TelegramBot\Api\Types\Update
         return '';
     }
 
-    public function getCallbackQueryMessageId(): float|int
+    public function getCallbackQueryMessageId(): int|null
     {
-        return $this->getCallbackQuery()->getMessage()->getMessageId();
+        return $this->getCallbackQuery()?->getMessage()?->getMessageId();
     }
 }

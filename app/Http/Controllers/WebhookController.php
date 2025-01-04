@@ -2,80 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\ButtonsTrait;
-use App\Traits\RecipeInfoTrait;
-use App\Utils\Api;
-use App\Utils\FindCommandHandler;
-use App\Utils\Handlers\InlineQueryCommandHandler;
+use App\Services\Handlers\UpdateProcessorService;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use TelegramBot\Api\Client;
-use TelegramBot\Api\Exception;
-use TelegramBot\Api\HttpException;
-use TelegramBot\Api\Types\Update;
 
 class WebhookController
 {
-    use ButtonsTrait, RecipeInfoTrait;
-
-    public function handle(): void
+    public function __construct(private readonly UpdateProcessorService $updateProcessorService)
     {
-        $client = new Client(getenv('TELEGRAM_BOT_TOKEN'));
-
-        $client->on(function (Update $update) {
-            $newUpdate = new \App\Utils\Update($update);
-
-            $this->createHandlerInstance($this->determineHandler($newUpdate), $newUpdate)->handle();
-        }, function (Update $update) {
-            return ($update->getMessage() !== null && !$update->getMessage()->getViaBot()) || $update->getCallbackQuery() !== null;
-        });
-
-        $client->on(function (Update $update) {
-            $bot = new Api(config('telegram.telegram_bot_token'));
-            $handler = new InlineQueryCommandHandler(new \App\Utils\Update($update));
-            try {
-                $bot->answerInlineQuery(
-                    $update->getInlineQuery()->getId(),
-                    $handler->handle(),
-                    0,
-                    false,
-                    $handler->offset + 20
-                );
-            } catch (Exception $e) {
-                Log::info($e->getMessage());
-            }
-
-            return true;
-        }, function (Update $update) {
-            return $update->getInlineQuery() !== null;
-        });
-
-        $client->run();
     }
 
-    private function determineHandler(\App\Utils\Update $update): ?string
+    public function handle(Client $client): void
     {
-        $handlerClassName = null;
-        if ($update->getCallbackQuery()) {
-            $action = \json_decode($update->getCallbackQuery()->getData(), true)['a'];
-
-            if (isset(config('telegram.handlers.callback')[$action])) {
-                $handlerClassName = config('telegram.handlers.callback')[$action];
-            }
-        } elseif ($update->getMessageText()) {
-            $handler = new FindCommandHandler($update);
-            $handlerClassName = $handler->findCommandHandler();
+        try {
+            $client->on(
+                fn($update) => $this->updateProcessorService->process($update),
+                fn($update) => $this->updateProcessorService->shouldProcess($update)
+            )->run();
+        } catch (Exception $exception) {
+            Log::error('WebhookController: ' . $exception->getMessage() . $exception->getTraceAsString());
         }
-
-        return $handlerClassName;
-    }
-
-    private function createHandlerInstance(?string $handlerClassName, Update $update)
-    {
-        return new ($handlerClassName ?? StartCommand::class) ($update);
-    }
-
-    public function test()
-    {
-        return ['sdf1123'];
     }
 }

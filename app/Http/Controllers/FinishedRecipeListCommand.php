@@ -12,10 +12,10 @@ class FinishedRecipeListCommand extends BaseCommand
     public function handle()
     {
         if (!$this->user->finishedRecipes()->count()) {
-            $this->getBot()->sendText(config('texts')['no_finished_recipes']);
+            $this->getBot()->sendText(__('texts.no_finished_recipes'));
         } else {
             $this->getBot()->sendMessageWithKeyboard(
-                config('texts')['recipes_list'],
+                __('texts.recipes_list'),
                 new InlineKeyboardMarkup($this->buildRecipeListButtons($this->user->finishedRecipes())),
             );
         }

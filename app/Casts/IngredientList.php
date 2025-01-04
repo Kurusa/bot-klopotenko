@@ -6,23 +6,22 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 class IngredientList implements CastsAttributes
 {
-    public function get($model, string $key, $value, array $attributes)
+    public function get($model, string $key, $value, array $attributes): string
     {
-        $message = "\n" . "<b> Інгредієнти: </b>" . "\n";
-        $maxLen = 0;
-        foreach ($model->ingredients as $ingredient) {
-            $len = mb_strlen($ingredient->pivot->quantity . ' ' . $ingredient->unit);
-            if ($len > $maxLen) {
-                $maxLen = $len;
-            }
-        }
-        foreach ($model->ingredients as $ingredient) {
-            $lenDiff = $maxLen - mb_strlen($ingredient->pivot->quantity . ' ' . $ingredient->unit);
+        $message = "\n" . __('texts.ingredients') . "\n";
+        $maxLen = $model->ingredients_collection->max(fn($ingredient) => mb_strlen($ingredient['quantity'] . ' ' . $ingredient['unit']));
+
+        $message .= '<pre>';
+        foreach ($model->ingredients_collection as $ingredient) {
+            $lenDiff = $maxLen - mb_strlen($ingredient['quantity'] . ' ' . $ingredient['unit']);
             $spaces = str_repeat(' ', $lenDiff);
-            $message .= '- ' . "<pre>" . $ingredient->pivot->quantity . ' ' . $ingredient->unit . $spaces . "</pre>";
-            if ($ingredient->pivot->quantity) $message .= ': ';
-            $message .= $ingredient->title . "\n";
+            $message .= '- ' . $ingredient['quantity'] . ' ' . $ingredient['unit'] . $spaces;
+            if ($ingredient['quantity']) {
+                $message .= ': ';
+            }
+            $message .= $ingredient['title'] . "\n";
         }
+        $message .= '</pre>';
 
         return $message;
     }

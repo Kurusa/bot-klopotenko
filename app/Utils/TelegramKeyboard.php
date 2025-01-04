@@ -37,14 +37,7 @@ class TelegramKeyboard
         }
     }
 
-    /**
-     * @param string $text
-     * @param array $callback
-     */
-    static function addButton(
-        string $text,
-        array  $callback,
-    ): void
+    static function addButton(string $text, array $callback): void
     {
         self::$buttons[] = [[
             'text' => $text,
@@ -52,12 +45,7 @@ class TelegramKeyboard
         ]];
     }
 
-    /**
-     * @param string $text
-     */
-    static function addInlineButton(
-        string $text,
-    ): void
+    static function addInlineButton(string $text): void
     {
         self::$buttons[] = [[
             'text' => $text,
@@ -65,9 +53,6 @@ class TelegramKeyboard
         ]];
     }
 
-    /**
-     * @param array $buttons
-     */
     static function addButtons(array $buttons): void
     {
         self::$buttons[] = array_map(function ($button) {
