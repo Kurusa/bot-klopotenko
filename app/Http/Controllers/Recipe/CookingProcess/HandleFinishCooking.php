@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Recipe\CookingProcess;
 
 use App\Events\CookingDoneEvent;
+use App\Events\RateRecipeEvent;
 use App\Http\Controllers\BaseCommand;
-use App\Http\Controllers\Recipe\Rate\PromptRateRecipe;
 use App\Models\Recipe;
 
 class HandleFinishCooking extends BaseCommand
@@ -16,9 +16,11 @@ class HandleFinishCooking extends BaseCommand
 
         CookingDoneEvent::dispatch(
             $this->user,
-            $this->update->getCallbackQueryMessageId(),
             $recipe,
         );
-        $this->triggerCommand(PromptRateRecipe::class);
+        RateRecipeEvent::dispatch(
+            $this->user,
+            $recipe,
+        );
     }
 }

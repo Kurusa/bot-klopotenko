@@ -17,8 +17,7 @@ class CookingDoneEvent
 
     public function __construct(
         public readonly User   $user,
-        public readonly int    $messageId,
-        public readonly Recipe $recipe
+        public readonly Recipe $recipe,
     )
     {
     }

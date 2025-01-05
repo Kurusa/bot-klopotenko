@@ -2,19 +2,24 @@
 
 namespace App\Events;
 
-use App\Models\Recipe;
+use App\Models\Step;
+use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CreatedNewRecipeEvent
+class PromptRecipeStepEvent
 {
     use Dispatchable;
     use InteractsWithSockets;
     use SerializesModels;
 
-    public function __construct(public readonly Recipe $recipe)
+    public function __construct(
+        public readonly User $user,
+        public readonly Step $step,
+        public readonly ?int $replyToMessageId,
+    )
     {
     }
 

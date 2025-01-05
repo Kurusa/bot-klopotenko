@@ -5,6 +5,7 @@ namespace App\Utils;
 class TelegramKeyboard
 {
     static int $columns = 1;
+
     static array $list;
 
     static array $buttons = [];
@@ -37,30 +38,12 @@ class TelegramKeyboard
         }
     }
 
-    static function addButton(string $text, array $callback): void
-    {
-        self::$buttons[] = [[
-            'text' => $text,
-            'callback_data' => json_encode($callback),
-        ]];
-    }
-
     static function addInlineButton(string $text): void
     {
         self::$buttons[] = [[
             'text' => $text,
             'switch_inline_query_current_chat' => '',
         ]];
-    }
-
-    static function addButtons(array $buttons): void
-    {
-        self::$buttons[] = array_map(function ($button) {
-            return [
-                'text' => $button['text'],
-                'callback_data' => json_encode($button['callback_data']),
-            ];
-        }, $buttons);
     }
 
     static function get(): array

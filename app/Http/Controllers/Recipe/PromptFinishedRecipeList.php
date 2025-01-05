@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Recipe;
 
+use App\Http\Controllers\BaseCommand;
 use App\Services\Keyboard\RecipeList\SavedRecipeListKeyboard;
 
 class PromptFinishedRecipeList extends BaseCommand

@@ -16,7 +16,6 @@ class CookingDoneListener implements ShouldQueue
         $bot->setChatId($event->user->chat_id);
 
         $event->user->stepToUpdate()->delete();
-        $bot->deleteMessageById($event->messageId);
         $bot->sendText(__('texts.cooking_done'));
 
         try {

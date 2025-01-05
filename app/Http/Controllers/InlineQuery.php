@@ -3,33 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recipe;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use App\Services\Keyboard\RecipeInfo\RecipeInfoKeyboardService;
 use TelegramBot\Api\Types\Inline\InputMessageContent\Text;
 use TelegramBot\Api\Types\Inline\QueryResult\Article;
 
 class InlineQuery extends BaseCommand
 {
-    public function handle()
+    public function handle(): void
     {
+        $offset = (int)$this->update->getInlineQuery()->getOffset() ?? 0;
+        $query = $this->update->getInlineQuery()->getQuery();
+
         $result = [];
-        $recipes = $this->getRecipes($this->query, $this->offset);
+        $recipes = $this->getRecipes($query, $offset);
+
+        /** @var Recipe $recipe */
         foreach ($recipes as $recipe) {
-            $message = $recipe->header;
+            $message = view('recipes.partials.title', ['recipe' => $recipe])->render();
             $message .= $recipe->ingredient_list;
 
             $result[] = new Article(
                 $recipe->id,
                 $recipe->title,
-                '🍽 Порції: ' . $recipe->portions . ' | ⏱ Час: ' . $recipe->time .
-                ' | ⚙ Складність: ' . $recipe->complexity_emoji . ' ' . $recipe->complexity_title,
+                view('recipes.partials.description', ['recipe' => $recipe])->render(),
                 $recipe->image_url,
                 null, null,
                 new Text($message, 'html'),
-                new InlineKeyboardMarkup($this->buildRecipeInfoButtons($recipe)),
+                RecipeInfoKeyboardService::buildKeyboard($recipe),
             );
         }
 
-        return $result;
+        $this->getBot()->answerInlineQuery(
+            $this->update->getInlineQuery()->getId(),
+            $result,
+            1
+        );
     }
 
     private function getRecipes(string $search, int $offset)

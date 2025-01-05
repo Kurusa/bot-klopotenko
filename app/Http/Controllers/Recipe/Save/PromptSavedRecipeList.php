@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Recipe\Save;
 
 use App\Http\Controllers\BaseCommand;
 use App\Services\Keyboard\RecipeList\SavedRecipeListKeyboard;
-use App\Traits\ButtonsTrait;
 
 class PromptSavedRecipeList extends BaseCommand
 {
-    use ButtonsTrait;
-
     public function handle(): void
     {
         if (!$this->user->savedRecipes()->count()) {

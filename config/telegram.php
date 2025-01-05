@@ -3,8 +3,8 @@
 use App\Http\Controllers\Back;
 use App\Http\Controllers\Feedback;
 use App\Http\Controllers\MainMenu;
-use App\Http\Controllers\PromptFinishedRecipeList;
 use App\Http\Controllers\Recipe\List\PromptRecipeCategoryList;
+use App\Http\Controllers\Recipe\PromptFinishedRecipeList;
 use App\Http\Controllers\Recipe\Save\PromptSavedRecipeList;
 
 return [

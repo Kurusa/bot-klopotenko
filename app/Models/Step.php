@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property int $recipe_id
  * @property string $description
- * @property string $time
  * @property string $image_url
  * @property int $index
  */
@@ -22,7 +21,6 @@ class Step extends Model
     protected $fillable = [
         'recipe_id',
         'description',
-        'time',
         'image_url',
         'index',
     ];

@@ -6,7 +6,6 @@ use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Step;
-use App\Traits\ButtonsTrait;
 use DOMDocument;
 use DOMXPath;
 use ErrorException;
@@ -34,7 +33,6 @@ class ParseRecipesCommand extends Command
     protected $signature = 'parse-recipes';
 
     private $url;
-    use ButtonsTrait;
 
     public function handle()
     {
