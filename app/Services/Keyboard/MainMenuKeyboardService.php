@@ -6,7 +6,7 @@ use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 
 class MainMenuKeyboardService
 {
-    public static function createMainMenuKeyboard(): ReplyKeyboardMarkup
+    public static function buildKeyboard(): ReplyKeyboardMarkup
     {
         return new ReplyKeyboardMarkup([
             [__('texts.recipes_list')],

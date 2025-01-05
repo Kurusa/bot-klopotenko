@@ -3,7 +3,8 @@
 namespace App\Enums\CallbackAction\Recipe;
 
 use App\Enums\CallbackAction\CallbackActionEnum;
-use App\Http\Controllers\RecipeList\PromptRecipeInfo;
+use App\Http\Controllers\Recipe\Save\HandleRemoveRecipeFromSaved;
+use App\Http\Controllers\Recipe\Save\HandleSaveRecipe;
 
 enum SavedAction: int implements CallbackActionEnum
 {
@@ -13,7 +14,8 @@ enum SavedAction: int implements CallbackActionEnum
     public function handler(): string
     {
         return match ($this) {
-            self::SAVE_RECIPE, self::REMOVE_RECIPE_FROM_SAVED => PromptRecipeInfo::class,
+            self::SAVE_RECIPE => HandleSaveRecipe::class,
+            self::REMOVE_RECIPE_FROM_SAVED => HandleRemoveRecipeFromSaved::class,
         };
     }
 }

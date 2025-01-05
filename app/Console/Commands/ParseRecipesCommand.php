@@ -105,7 +105,8 @@ class ParseRecipesCommand extends Command
             if (in_array(trim($breadcrumb->textContent), ['Здорове харчування', 'Поради', 'Новини'])) {
                 return [];
             }
-        } catch (ErrorException) {}
+        } catch (ErrorException) {
+        }
 
         $sourceUrl = $url;
         $title = $this->extractTitle($xpath);
@@ -125,13 +126,13 @@ class ParseRecipesCommand extends Command
         try {
             $recipe = Recipe::create([
                 'category_id' => $recipeData['categoryId'],
-                'title'       => $recipeData['title'],
-                'portions'    => $recipeData['portions'],
-                'time'        => $recipeData['time'],
-                'complexity'  => $recipeData['complexity'],
-                'source_url'  => $recipeData['sourceUrl'],
-                'image_url'   => $recipeData['recipeImage'],
-                'advice'      => $recipeData['advice'],
+                'title' => $recipeData['title'],
+                'portions' => $recipeData['portions'],
+                'time' => $recipeData['time'],
+                'complexity' => $recipeData['complexity'],
+                'source_url' => $recipeData['sourceUrl'],
+                'image_url' => $recipeData['recipeImage'],
+                'advice' => $recipeData['advice'],
             ]);
 
             foreach ($recipeData['ingredients'] as $ingredient) {
@@ -147,8 +148,8 @@ class ParseRecipesCommand extends Command
             foreach ($recipeData['steps'] as $step) {
                 $result[] = new Step([
                     'description' => $step['description'],
-                    'recipe_id'   => $recipe->id,
-                    'image_url'   => $step['image_url'],
+                    'recipe_id' => $recipe->id,
+                    'image_url' => $step['image_url'],
                 ]);
             }
             $recipe->steps()->saveMany($result);
@@ -217,7 +218,7 @@ class ParseRecipesCommand extends Command
 
             $steps[] = [
                 'description' => $this->trimString($item->textContent),
-                'image_url'   => $imageUrl ?? '',
+                'image_url' => $imageUrl ?? '',
             ];
         }
 
@@ -240,9 +241,9 @@ class ParseRecipesCommand extends Command
     private function extractTitle(DOMXPath $xpath): string
     {
         return $xpath
-                ->query(".//h1[@class='item-title']")
-                ->item(0)
-                ->textContent ?? '';
+            ->query(".//h1[@class='item-title']")
+            ->item(0)
+            ->textContent ?? '';
     }
 
     private function loadHtml($html): DOMXPath|string

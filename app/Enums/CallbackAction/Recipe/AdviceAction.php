@@ -3,7 +3,8 @@
 namespace App\Enums\CallbackAction\Recipe;
 
 use App\Enums\CallbackAction\CallbackActionEnum;
-use App\Http\Controllers\RecipeList\PromptRecipeInfo;
+use App\Http\Controllers\Recipe\Info\HandleRecipeAdvice;
+use App\Http\Controllers\Recipe\Info\PromptRecipeInfo;
 
 enum AdviceAction: int implements CallbackActionEnum
 {
@@ -13,7 +14,8 @@ enum AdviceAction: int implements CallbackActionEnum
     public function handler(): string
     {
         return match ($this) {
-            self::SHOW_ADVICE, self::HIDE_ADVICE => PromptRecipeInfo::class,
+            self::SHOW_ADVICE => HandleRecipeAdvice::class,
+            self::HIDE_ADVICE => PromptRecipeInfo::class,
         };
     }
 }

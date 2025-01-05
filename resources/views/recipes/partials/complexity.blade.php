@@ -1,1 +1,1 @@
-{{ __('texts.complexity') }} {{ $recipe->complexity_emoji }} {{ $recipe->complexity_title }}
+{{ __('texts.complexity') }} {{ $recipe->complexity_emoji }} {{ config('constants.complexity_data.' . $recipe->complexity . '.title') }}

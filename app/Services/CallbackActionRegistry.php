@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Enums\CallbackAction\BackAction;
 use App\Enums\CallbackAction\CallbackAction;
 use App\Enums\CallbackAction\Recipe\AdviceAction;
+use App\Enums\CallbackAction\Recipe\RatingAction;
 use App\Enums\CallbackAction\Recipe\SavedAction;
+use App\Enums\CallbackAction\Recipe\StepAction;
 
 class CallbackActionRegistry
 {
@@ -16,6 +18,8 @@ class CallbackActionRegistry
             BackAction::class,
             AdviceAction::class,
             SavedAction::class,
+            StepAction::class,
+            RatingAction::class,
         ];
     }
 }

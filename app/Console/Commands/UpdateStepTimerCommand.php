@@ -38,7 +38,7 @@ class UpdateStepTimerCommand extends Command
                     continue;
                 }
                 $bot->sendMessageWithKeyboard(
-                    $stepToUpdate->step->step_done_text . "\n" . "\n" . 'Наступний крок: ' . "\n" . $nextStep->description,
+                    'Наступний крок: ' . "\n" . $nextStep->description,
                     new InlineKeyboardMarkup($this->buildRecipeStepButtons($nextStep)),
                 );
                 $stepToUpdate->delete();

@@ -22,12 +22,11 @@ use Illuminate\Support\Collection;
  * @property int $category_id
  * @property string $status
  * @property string|null $image_url
- * @property string $is_popular
+ *
  * @property string $ingredient_list
  * @property Collection $ingredients_collection
- *
  * @property-read Collection $ingredients
- * @property-read string $complexity_title
+ * @property string $is_popular
  * @property-read string $complexity_emoji
  * @property-read string $header
  */
@@ -50,14 +49,8 @@ class Recipe extends Model
     protected $casts = [
         'ingredient_list' => IngredientList::class,
         'is_popular' => 'boolean',
+        'rating' => 'integer',
     ];
-
-    protected function title(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => $this->is_popular . $value . ' ' . $this->complexity_emoji,
-        );
-    }
 
     protected function isPopular(): Attribute
     {
@@ -66,35 +59,10 @@ class Recipe extends Model
         )->shouldCache();
     }
 
-    protected function complexityTitle(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => config('constants')['complexity_data'][$this->complexity]['title'],
-        )->shouldCache();
-    }
-
     protected function complexityEmoji(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => config('constants')['complexity_data'][$this->complexity]['emoji'],
-        )->shouldCache();
-    }
-
-    protected function advice(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => "\n" . 'ℹ️ Порада: ' . "\n" . trim($value),
-        )->shouldCache();
-    }
-
-    protected function header(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => "<b>" . $this->title . "</b>" . "\n" . "\n" .
-                '🍽 Порції: ' . $this->portions .
-                ' | ⏱ Час: ' . $this->time .
-                ' | ⚙ Складність: ' . $this->complexity_emoji . ' ' . $this->complexity_title .
-                "\n"
+            get: fn($value) => config('constants.complexity_data.' . $this->complexity . '.emoji'),
         )->shouldCache();
     }
 
@@ -109,16 +77,6 @@ class Recipe extends Model
                 ];
             })
         )->shouldCache();
-    }
-
-    public function finishedRecipeRating(): ?string
-    {
-        $finishedRecipe = $this->user->finishedRecipes()->where('recipe_id', $this->id)->first();
-        if (!$finishedRecipe) {
-            return null;
-        }
-
-        return $finishedRecipe->pivot->rating ? $finishedRecipe->pivot->ratingDescription() : null;
     }
 
     public function ingredients(): BelongsToMany

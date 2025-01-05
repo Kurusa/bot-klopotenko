@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Services\Keyboard\WeatherKeyboardService;
 use App\Services\Weather\WeatherFormatter;
 use App\Services\Weather\WeatherService;
-use App\Utils\Api;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -19,7 +18,7 @@ class SaveMessage implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        private readonly User   $user,
+        private readonly User  $user,
         private readonly array $update,
     )
     {

@@ -4,14 +4,16 @@ namespace App\Services\Keyboard\RecipeList;
 
 use App\Enums\CallbackAction\CallbackAction;
 
-class PageNumberButtonsService {
+class PageNumberButtonsService
+{
     public static function createPageNumbers(
-        int $categoryId,
-        int $offset,
-        int $recipeCount,
-        int $limit,
+        int  $offset,
+        int  $recipeCount,
+        ?int $categoryId = null,
     ): array
     {
+        $limit = config('telegram.recipe_list_limit');
+
         $numberButtons = [];
         $currentPage = (int)floor($offset / $limit);
         $totalPages = (int)ceil($recipeCount / $limit);

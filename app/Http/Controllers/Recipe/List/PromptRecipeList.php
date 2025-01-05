@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\RecipeList;
+namespace App\Http\Controllers\Recipe\List;
 
 use App\Enums\CallbackAction\BackAction;
 use App\Http\Controllers\BaseCommand;
@@ -25,6 +25,13 @@ class PromptRecipeList extends BaseCommand
 
         if ($this->update->getCallbackAction() === BackAction::BACK_TO_RECIPE_LIST) {
             $this->getBot()->deleteMessageById($this->update->getCallbackQueryMessageId());
+            $this->getBot()->sendMessageWithKeyboard(
+                __('texts.recipes_with_category', [
+                    'category' => $category->title,
+                ]),
+                $keyboard,
+            );
+            return;
         }
 
         $this->getBot()->sendMessageWithKeyboard(
@@ -32,6 +39,7 @@ class PromptRecipeList extends BaseCommand
                 'category' => $category->title,
             ]),
             $keyboard,
+            $this->update->getCallbackQueryMessageId(),
         );
     }
 }

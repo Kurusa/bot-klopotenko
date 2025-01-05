@@ -5,7 +5,6 @@ namespace App\Traits;
 use App\Models\Recipe;
 use App\Models\Step;
 use App\Utils\TelegramKeyboard;
-use Illuminate\Support\Collection;
 
 trait ButtonsTrait
 {
@@ -126,48 +125,6 @@ trait ButtonsTrait
         ];
     }
 
-    public function buildRecipeStepButtons(Step $step): array
-    {
-        $keyboard = [];
-
-        if ($step->index > 1) {
-            $keyboard[] = [
-                'text' => __('texts.back'),
-                'callback_data' => [
-                    'a' => 'back_step',
-                    'recipe_id' => $step->recipe_id,
-                    'step_id' => $step->id - 1,
-                ],
-            ];
-        }
-
-        if ($step->time) {
-            $keyboard[] = [
-                'text' => __('texts.start_timer'),
-                'callback_data' => [
-                    'a' => 'start_timer',
-                    'recipe_id' => $step->recipe_id,
-                    'step_id' => $step->id,
-                ],
-            ];
-        } else {
-            $keyboard[] = [
-                'text' => "— Крок " . $step->index + 1,
-                'callback_data' => [
-                    'a' => 'next_step',
-                    'recipe_id' => $step->recipe_id,
-                    'step_id' => $step->id + 1,
-                ],
-            ];
-        }
-
-        TelegramKeyboard::$list = $keyboard;
-        TelegramKeyboard::$columns = 2;
-        TelegramKeyboard::build();
-
-        return TelegramKeyboard::get();
-    }
-
     public function buildRatingsButtons(Recipe $recipe): array
     {
         $buttons = [];
@@ -175,9 +132,9 @@ trait ButtonsTrait
             $buttons[0][] = [
                 'text' => $rating . $emoji,
                 'callback_data' => json_encode([
-                    'a'         => 'rate',
+                    'a' => 'rate',
                     'recipe_id' => $recipe->id,
-                    'rating'    => $rating,
+                    'rating' => $rating,
                 ]),
             ];
         }

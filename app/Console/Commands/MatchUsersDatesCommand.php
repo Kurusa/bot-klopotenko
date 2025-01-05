@@ -45,7 +45,7 @@ class MatchUsersDatesCommand extends Command
             $update = new Update(new \TelegramBot\Api\Types\Update());
             $update->setUser($user);
             (new RecipeInfoCommand($update, [
-                'recipe_id'       => $recipe->id,
+                'recipe_id' => $recipe->id,
                 'is_notification' => true,
             ]))->handle();
 

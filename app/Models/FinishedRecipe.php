@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
  * @property int $rating
+ * @property string $rating_description
  */
 class FinishedRecipe extends Model
 {
@@ -24,8 +26,10 @@ class FinishedRecipe extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function ratingDescription(): string
+    protected function ratingDescription(): Attribute
     {
-        return __('texts.your_rating') . $this->rating . config('constants.ratings.' . $this->rating);
+        return Attribute::make(
+            get: fn() => __('texts.your_rating') . $this->rating . config('constants.ratings.' . $this->rating)
+        )->shouldCache();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\RecipeList;
+namespace App\Http\Controllers\Recipe\List;
 
 use App\Http\Controllers\BaseCommand;
 use App\Services\Keyboard\RecipeList\RecipeCategoryListKeyboardService;
@@ -11,7 +11,7 @@ class PromptRecipeCategoryList extends BaseCommand
     {
         $this->getBot()->sendMessageWithKeyboard(
             __('texts.category_list'),
-            RecipeCategoryListKeyboardService::getRecipeCategoryListKeyboard(),
+            RecipeCategoryListKeyboardService::buildKeyboard(),
             $this->update->getCallbackQueryMessageId(),
         );
     }

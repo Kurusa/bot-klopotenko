@@ -19,6 +19,8 @@ use Illuminate\Support\Collection;
  * @property string $language
  *
  * @property-read Collection<Feedback> $feedbacks
+ * @property-read Collection<Recipe> $savedRecipes
+ * @property-read Collection<Recipe> $finishedRecipes
  */
 class User extends Model
 {

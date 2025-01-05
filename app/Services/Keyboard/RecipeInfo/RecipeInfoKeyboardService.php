@@ -8,17 +8,18 @@ use App\Enums\CallbackAction\Recipe\AdviceAction;
 use App\Enums\CallbackAction\Recipe\SavedAction;
 use App\Models\Recipe;
 use App\Models\User;
-use App\Utils\TelegramKeyboard;
-use Illuminate\Support\Facades\Log;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class RecipeInfoKeyboardService
 {
-    public static function getRecipeInfoKeyboard(
-        Recipe $recipe,
-        bool   $showAdvice = true,
+    public static function buildKeyboard(
+        Recipe      $recipe,
+        bool        $showAdvice = true,
+        ?BackAction $backAction = BackAction::BACK_TO_RECIPE_LIST,
     ): InlineKeyboardMarkup
     {
+        $buttons = [];
+
         $buttons[][] = [
             'text' => __('texts.start_cooking'),
             'callback_data' => json_encode([
@@ -27,11 +28,17 @@ class RecipeInfoKeyboardService
             ])
         ];
 
+        $row = [];
+
         if ($recipe->advice) {
-            self::addAdviceButtons($buttons, $showAdvice, $recipe);
+            $row[] = self::getAdviceButton($showAdvice, $recipe);
         }
 
-        self::addSavedButton($buttons, $recipe);
+        $row[] = self::getSavedButton($recipe);
+
+        if (!empty($row)) {
+            $buttons[] = $row;
+        }
 
         /** @var User $user */
         $user = request()->get('user');
@@ -48,50 +55,46 @@ class RecipeInfoKeyboardService
         $buttons[][] = [
             'text' => __('texts.back'),
             'callback_data' => json_encode([
-                'a' => BackAction::BACK_TO_RECIPE_LIST->value,
+                'a' => $backAction->value,
                 'cat_id' => $recipe->category_id,
+                'recipe_id' => $recipe->id,
             ])
         ];
 
         return new InlineKeyboardMarkup($buttons);
     }
 
-    private static function addAdviceButtons(array &$buttons, bool $showAdvice, Recipe $recipe): void
+    private static function getAdviceButton(bool $showAdvice, Recipe $recipe): array
     {
-        if ($showAdvice) {
-            $adviceText = __('texts.show_advice');
-            $adviceAction = AdviceAction::SHOW_ADVICE;
-        } else {
-            $adviceText = __('texts.hide_advice');
-            $adviceAction = AdviceAction::HIDE_ADVICE;
-        }
+        $adviceText = $showAdvice ? __('texts.show_advice') : __('texts.hide_advice');
+        $adviceAction = $showAdvice ? AdviceAction::SHOW_ADVICE : AdviceAction::HIDE_ADVICE;
 
-        $buttons[][] = [
+        return [
             'text' => $adviceText,
             'callback_data' => json_encode([
-                'a' => $adviceAction,
+                'a' => $adviceAction->value,
                 'recipe_id' => $recipe->id,
             ]),
         ];
     }
 
-    private static function addSavedButton(array &$buttons, Recipe $recipe): void
+    private static function getSavedButton(Recipe $recipe): array
     {
         /** @var User $user */
         $user = request()->get('user');
 
-        if ($user->savedRecipes()->pluck('id')->contains($recipe->id)) {
-            $savedText = __('texts.remove_from_saved');
-            $savedAction = SavedAction::REMOVE_RECIPE_FROM_SAVED->value;
-        } else {
-            $savedText = __('texts.save_for_later');
-            $savedAction = SavedAction::SAVE_RECIPE->value;
-        }
+        $savedText = $user->savedRecipes()->pluck('id')->contains($recipe->id)
+            ? __('texts.remove_from_saved')
+            : __('texts.save_for_later');
 
-        $buttons[][] = [
+        $savedAction = $user->savedRecipes()->pluck('id')->contains($recipe->id)
+            ? SavedAction::REMOVE_RECIPE_FROM_SAVED
+            : SavedAction::SAVE_RECIPE;
+
+        return [
             'text' => $savedText,
             'callback_data' => json_encode([
-                'a' => $savedAction,
+                'a' => $savedAction->value,
                 'recipe_id' => $recipe->id,
             ]),
         ];

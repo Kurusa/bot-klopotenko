@@ -15,25 +15,14 @@ class CookingDoneEvent
     use InteractsWithSockets;
     use SerializesModels;
 
-    public User $user;
-    public $messageId;
-    public Recipe $recipe;
-
-    /**
-     * @param User $user
-     * @param $messageId
-     * @param Recipe $recipe
-     */
-    public function __construct(User $user, $messageId, Recipe $recipe)
+    public function __construct(
+        public readonly User   $user,
+        public readonly int    $messageId,
+        public readonly Recipe $recipe
+    )
     {
-        $this->user = $user;
-        $this->messageId = $messageId;
-        $this->recipe = $recipe;
     }
 
-    /**
-     * @return PrivateChannel
-     */
     public function broadcastOn(): PrivateChannel
     {
         return new PrivateChannel('channel-name');

@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\CookingSteps\StepStrategy;
-use App\Http\Controllers\RecipeInfoActions\RecipeInfoActionStrategy;
-use App\Models\Recipe;
-use App\Models\Step;
 use App\Models\User;
 use App\Utils\Api;
 use App\Utils\Update;
@@ -22,27 +18,14 @@ abstract class BaseCommand
         $this->handleCallbackQuery();
     }
 
-    protected function handleCallbackQuery(): void
+    public function handleCallbackQuery(): void
     {
-        if (!$this->update->getCallbackQuery()) {
-            return;
-        }
-
-        try {
-            if ($this->update->getCallbackQueryByKey('a') === 'save_recipe') {
-                $this->getBot()->answerCallbackQuery(
-                    $this->update->getCallbackQuery()->getId(),
-                    __('texts.recipe_saved'),
-                );
-            } else if ($this->update->getCallbackQueryByKey('a') === 'remove_from_saved') {
-                $this->getBot()->answerCallbackQuery(
-                    $this->update->getCallbackQuery()->getId(),
-                    __('texts.recipe_removed_from_save'),
-                );
-            } else {
+        if ($this->update->getCallbackQuery()) {
+            try {
                 $this->getBot()->answerCallbackQuery($this->update->getCallbackQuery()->getId());
+            } catch (Exception $exception) {
+                $this->getBot()->notifyAdmin('BaseCommand: ' . $exception->getMessage());
             }
-        } catch (Exception $e) {
         }
     }
 
@@ -56,22 +39,5 @@ abstract class BaseCommand
         (new $class($this->update, $params))->handle();
     }
 
-    protected function createStrategy(string $strategyClass): StepStrategy|RecipeInfoActionStrategy
-    {
-        $strategy = new $strategyClass();
-        $strategy->setContext($this->update, $this->user, $this->getBot());
-        return $strategy;
-    }
-
-    protected function performStepAction(StepStrategy $strategy, Step $step): void
-    {
-        $strategy->performStepAction($step);
-    }
-
-    protected function performRecipeInfoAction(RecipeInfoActionStrategy $strategy, Recipe $recipe, string $message): void
-    {
-        $strategy->performStepAction($recipe, $message);
-    }
-
-    abstract function handle();
+    abstract public function handle();
 }

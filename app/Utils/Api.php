@@ -28,7 +28,8 @@ class Api extends BotApi
     public function sendMessageWithKeyboard(
         string                                   $text,
         InlineKeyboardMarkup|ReplyKeyboardMarkup $keyboard,
-        int                                      $messageIdToUpdate = null,
+        ?int                                     $messageIdToUpdate = null,
+        ?int                                     $replyToMessageId = null,
     ): Message
     {
         try {
@@ -43,9 +44,9 @@ class Api extends BotApi
             return parent::sendMessage(
                 $this->chatId,
                 $text,
-                'markdown',
+                'html',
                 true,
-                null,
+                $replyToMessageId,
                 $keyboard,
             );
         } catch (Exception $e) {
@@ -62,7 +63,7 @@ class Api extends BotApi
             return parent::sendMessage(
                 $this->chatId,
                 $text,
-                'markdown',
+                'html',
                 false,
                 null,
                 null,
@@ -92,7 +93,7 @@ class Api extends BotApi
                 $this->chatId,
                 $messageId,
                 $text,
-                'markdown',
+                'html',
                 false,
                 $keyboard,
             );

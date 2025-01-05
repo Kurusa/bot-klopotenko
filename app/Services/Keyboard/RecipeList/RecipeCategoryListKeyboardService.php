@@ -9,7 +9,7 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class RecipeCategoryListKeyboardService
 {
-    public static function getRecipeCategoryListKeyboard(): InlineKeyboardMarkup
+    public static function buildKeyboard(): InlineKeyboardMarkup
     {
         $categories = Category::select('categories.id', 'categories.title')
             ->selectRaw('COUNT(messages.category_id) as message_count')

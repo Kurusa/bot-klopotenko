@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recipe;
-use App\Traits\ButtonsTrait;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Inline\InputMessageContent\Text;
 use TelegramBot\Api\Types\Inline\QueryResult\Article;
-use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 
 class InlineQuery extends BaseCommand
 {

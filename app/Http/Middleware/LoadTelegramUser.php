@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Utils\Api;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class LoadTelegramUser
 {

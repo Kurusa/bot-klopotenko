@@ -4,17 +4,15 @@ namespace App\Listeners;
 
 use App\Events\CookingDoneEvent;
 use App\Utils\Api;
-use Exception;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\QueryException;
 
-class CookingDoneListener
+class CookingDoneListener implements ShouldQueue
 {
-    /**
-     * @throws Exception
-     */
     public function handle(CookingDoneEvent $event): void
     {
-        $bot = new Api(config('telegram.telegram_bot_token'));
+        /** @var Api $bot */
+        $bot = app(Api::class);
         $bot->setChatId($event->user->chat_id);
 
         $event->user->stepToUpdate()->delete();
@@ -24,7 +22,6 @@ class CookingDoneListener
         try {
             $event->user->finishedRecipes()->attach($event->recipe->id);
         } catch (QueryException) {
-
         }
     }
 }
