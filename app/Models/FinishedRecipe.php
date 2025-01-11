@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $rating
- * @property string $rating_description
  */
 class FinishedRecipe extends Model
 {

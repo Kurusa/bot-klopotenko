@@ -15,7 +15,6 @@ class CookingDoneListener implements ShouldQueue
         $bot = app(Api::class);
         $bot->setChatId($event->user->chat_id);
 
-        $event->user->stepToUpdate()->delete();
         $bot->sendText(__('texts.cooking_done'));
 
         try {

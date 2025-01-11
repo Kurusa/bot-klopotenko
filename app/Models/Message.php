@@ -10,7 +10,6 @@ class Message extends Model
     protected $fillable = [
         'text',
         'user_id',
-        'category_id',
     ];
 
     public function user(): BelongsTo

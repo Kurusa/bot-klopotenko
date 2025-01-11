@@ -7,7 +7,6 @@ use App\Http\Controllers\Recipe\Rate\HandleRateRecipe;
 
 enum RatingAction: int implements CallbackActionEnum
 {
-
     case VERY_BAD = 16;
     case BAD = 17;
     case MIDDLE = 18;

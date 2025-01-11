@@ -48,4 +48,9 @@ return [
     // recipe step
     'step' => '— Крок :step',
     'finish_cooking' => '✅ Завершити',
+
+    // complexity
+    'easy' => 'легка',
+    'medium' => 'середня',
+    'hard' => 'складна',
 ];

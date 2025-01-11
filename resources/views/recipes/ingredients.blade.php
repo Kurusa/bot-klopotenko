@@ -8,7 +8,7 @@ $maxLen = $ingredients->max(fn($ingredient) => mb_strlen($ingredient['quantity']
 $lenDiff = $maxLen - mb_strlen($ingredient['quantity'] . ' ' . $ingredient['unit']);
 $spaces = str_repeat(' ', $lenDiff);
 @endphp
-@if($ingredient['quantity'])
+@if($ingredient['unit'])
 - {{ $ingredient['quantity'] }} {{ $ingredient['unit'] }}{{ $spaces }}: {{ $ingredient['title'] }}
 @else
 - {{ $ingredient['title'] }}

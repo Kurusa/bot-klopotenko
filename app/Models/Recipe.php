@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\IngredientList;
+use App\Enums\Recipe\Complexity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -20,14 +21,12 @@ use Illuminate\Support\Collection;
  * @property int $portions
  * @property string|null $source_url
  * @property int $category_id
- * @property string $status
  * @property string|null $image_url
  *
  * @property string $ingredient_list
  * @property Collection $ingredients_collection
  * @property-read Collection $ingredients
  * @property string $is_popular
- * @property-read string $complexity_emoji
  * @property-read string $header
  */
 class Recipe extends Model
@@ -40,7 +39,6 @@ class Recipe extends Model
         'portions',
         'source_url',
         'category_id',
-        'status',
         'source_url',
         'image_url',
         'is_popular',
@@ -48,6 +46,7 @@ class Recipe extends Model
 
     protected $casts = [
         'ingredient_list' => IngredientList::class,
+        'complexity' => Complexity::class,
         'is_popular' => 'boolean',
         'rating' => 'integer',
     ];
@@ -56,13 +55,6 @@ class Recipe extends Model
     {
         return Attribute::make(
             get: fn($value) => $value ? '⭐ ' : '',
-        )->shouldCache();
-    }
-
-    protected function complexityEmoji(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => config('constants.complexity_data.' . $this->complexity . '.emoji'),
         )->shouldCache();
     }
 

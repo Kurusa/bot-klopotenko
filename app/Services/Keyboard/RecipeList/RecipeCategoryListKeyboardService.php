@@ -12,10 +12,8 @@ class RecipeCategoryListKeyboardService
     public static function buildKeyboard(): InlineKeyboardMarkup
     {
         $categories = Category::select('categories.id', 'categories.title')
-            ->selectRaw('COUNT(messages.category_id) as message_count')
-            ->leftJoin('messages', 'categories.id', '=', 'messages.category_id')
+            ->join('recipes', 'categories.id', '=', 'recipes.category_id')
             ->groupBy('categories.id', 'categories.title')
-            ->orderByDesc('message_count')
             ->get();
 
         TelegramKeyboard::addInlineButton(__('texts.search'));

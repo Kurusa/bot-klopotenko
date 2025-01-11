@@ -1,13 +1,23 @@
+// інгреєінти що не використовуються
+DELETE rc
+FROM ingredients rc
+LEFT JOIN recipe_ingredients r ON rc.id = r.ingredient_id
+WHERE r.ingredient_id IS NULL;
+
+
+// рецепти без кроків або інгредієнтів
+DELETE recipes
+FROM recipes
+LEFT JOIN recipe_steps ON recipes.id = recipe_steps.recipe_id
+LEFT JOIN recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id
+WHERE recipe_steps.recipe_id IS NULL OR recipe_ingredients.recipe_id IS NULL;
+
+
 SELECT i.id, i.title AS ingredient, COUNT(ri.recipe_id) AS recipe_count
 FROM ingredients i
 LEFT JOIN recipe_ingredients ri ON i.id = ri.ingredient_id
 GROUP BY i.id, i.title
 ORDER BY recipe_count DESC;
-
-DELETE i
-FROM ingredients i
-LEFT JOIN recipe_ingredients ri ON i.id = ri.ingredient_id
-WHERE ri.ingredient_id IS NULL;
 
 UPDATE recipe_ingredients r
 JOIN ingredients i ON r.ingredient_id = i.id

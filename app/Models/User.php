@@ -83,11 +83,6 @@ class User extends Model
             ->withTimestamps();
     }
 
-    public function stepToUpdate(): HasOne
-    {
-        return $this->hasOne(StepToUpdate::class);
-    }
-
     public function finishedRecipes(): BelongsToMany
     {
         return $this->belongsToMany(Recipe::class, 'user_finished_recipes')

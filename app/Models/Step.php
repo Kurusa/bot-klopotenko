@@ -42,11 +42,6 @@ class Step extends Model
         return strlen($this->description) >= 1024;
     }
 
-    public function stepToUpdate(): HasOne
-    {
-        return $this->hasOne(StepToUpdate::class);
-    }
-
     public function recipe(): BelongsTo
     {
         return $this->belongsTo(Recipe::class);
