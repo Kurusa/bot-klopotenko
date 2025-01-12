@@ -31,7 +31,10 @@ class RudParser extends Command
             if ($reader->nodeType === XMLReader::ELEMENT && $reader->localName === 'loc') {
                 $url = $reader->readString();
 
-                if (str_contains($url, '/consumer/recipe')) {
+                if (str_starts_with($url, 'https://rud.ua/consumer/recipe/')
+                    && count(explode('/', $url)) >= 8
+                    && (!Recipe::where('source_url', $url)->exists())
+                ) {
                     $this->processRecipePage($url);
                 }
             }
@@ -42,25 +45,18 @@ class RudParser extends Command
 
     private function processRecipePage(string $url): void
     {
-        $htmlPage = Http::get($url)->body();
-        $xpath = $this->loadHtml($htmlPage);
+        $this->info('Обробляю ' . $url);
+
+        $xpath = $this->loadHtml(Http::get($url)->body());
 
         $recipes = $this->extractRecipes($xpath, $url);
 
         foreach ($recipes as $recipeData) {
-            if (Recipe::where('source_url', $recipeData['source_url'])->exists()) {
-                continue;
-            }
-
             $category = $this->getOrCreateCategory($recipeData['category']);
-
-            if (!$recipeData['complexity']) {
-                continue;
-            }
 
             $recipe = Recipe::create([
                 'title' => $recipeData['title'],
-                'complexity' => $recipeData['complexity'],
+                'complexity' => Complexity::EASY,
                 'time' => $recipeData['time'],
                 'image_url' => $recipeData['image'],
                 'source_url' => $recipeData['source_url'],

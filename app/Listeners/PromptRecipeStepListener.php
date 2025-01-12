@@ -50,7 +50,7 @@ class PromptRecipeStepListener implements ShouldQueue
         }
     }
 
-    private function sendStepWithoutImage(Step $step, int $replyToMessageId): void
+    private function sendStepWithoutImage(Step $step, ?int $replyToMessageId): void
     {
         $this->api->sendMessageWithKeyboard(
             $step->description,
