@@ -36,7 +36,6 @@ class ParseRecipesCommand extends Command
 
     public function handle()
     {
-        //$categories = Category::whereNotNull('source_key')->get();
         $categories = Category::where('source_key', 'yevropejska')->get();
         $sourceUrls = Recipe::all()->pluck('source_url');
         $client = new Client();

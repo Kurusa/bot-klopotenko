@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 /**
  * @property int $id
  * @property string $title
- * @property string $source_key
  *
  * @property-read Collection<Recipe> $recipes
  */
@@ -17,7 +16,6 @@ class Category extends Model
 {
     protected $fillable = [
         'title',
-        'source_key',
     ];
 
     public function recipes(): HasMany
